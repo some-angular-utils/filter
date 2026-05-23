@@ -1,6 +1,6 @@
 {
   "name": "@some-angular-utils/selector",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Angular selector utility library",
   "author": {
     "name": "jose de los santos",
