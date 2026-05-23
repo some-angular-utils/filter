@@ -85,6 +85,7 @@ const defaultSelectorConfig = {
 
 export const Interactive: Story = {
     args: {
+        searchButtonText: 'Search',
         selectorConfig: defaultSelectorConfig
     },
     render: (args) => {

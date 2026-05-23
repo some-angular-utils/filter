@@ -21,6 +21,7 @@ import { CustomSelectComponent } from './components/custom-select/custom-select.
 export class SAUSelectorModule {
 
   @Input() selectorConfig: any;
+  @Input() searchButtonText = 'Buscar'
   // Emite un objeto con la estructura JSON limpia y el String de la URL armada
   @Output() onFilterProcessed = new EventEmitter<{ json: any, url: string }>();
 
