@@ -1,39 +1,39 @@
-# @some-angular-utils/selector
+# @some-angular-utils/filter
 
-[![github stars](https://img.shields.io/github/stars/some-angular-utils/selector.svg?style=social&label=Star)](https://github.com/some-angular-utils/selector)
+[![github stars](https://img.shields.io/github/stars/some-angular-utils/filter.svg?style=social&label=Star)](https://github.com/some-angular-utils/filter)
 
-[![NPM Version](https://img.shields.io/npm/v/@some-angular-utils/selector)](https://www.npmjs.com/package/@some-angular-utils/selector)
-[![NPM Downloads](https://img.shields.io/npm/dm/@some-angular-utils/selector)](https://www.npmjs.com/package/@some-angular-utils/selector)
+[![NPM Version](https://img.shields.io/npm/v/@some-angular-utils/filter)](https://www.npmjs.com/package/@some-angular-utils/filter)
+[![NPM Downloads](https://img.shields.io/npm/dm/@some-angular-utils/filter)](https://www.npmjs.com/package/@some-angular-utils/filter)
 
-[![npm bundle size](https://img.shields.io/bundlephobia/min/@some-angular-utils/selector)](https://www.npmjs.com/package/@some-angular-utils/selector)
-[![npm bundle size](https://img.shields.io/bundlephobia/minzip/@some-angular-utils/selector)](https://www.npmjs.com/package/@some-angular-utils/selector)
+[![npm bundle size](https://img.shields.io/bundlephobia/min/@some-angular-utils/filter)](https://www.npmjs.com/package/@some-angular-utils/filter)
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/@some-angular-utils/filter)](https://www.npmjs.com/package/@some-angular-utils/filter)
 
 ---
 
-[DEMO](https://some-angular-utils.github.io/selector)
+[DEMO](https://some-angular-utils.github.io/filter)
 
-[NPM](https://www.npmjs.com/package/@some-angular-utils/selector)
+[NPM](https://www.npmjs.com/package/@some-angular-utils/filter)
 
 ---
 
 ## IMPORT
 ```ts
-import { SAUselectorModule } from '@some-angular-utils/selector';
+import { SAUfilterModule } from '@some-angular-utils/filter';
 ```
 
 ## HTML
 ```ts
-<sau-selector
+<sau-filter
     [totalPages]="totalPages"
     [currentPage]="currentPage"
     (pageChange)="onPageChange($event)"
-></sau-selector>
+></sau-filter>
 ```
 
 ## COLORS
 
 ```css
-.sau-selector{
+.sau-filter{
     --sau-color-primary: rgb(147, 51, 234);
     --sau-color-secondary: var(--sau-color-primary);
     --sau-color-background: rgb(255, 255, 255);

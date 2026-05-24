@@ -8,17 +8,17 @@ import { moduleMetadata } from '@storybook/angular';
 import { useArgs } from '@storybook/preview-api';
 
 // Importamos directamente tu Componente Standalone
-import { SAUSelectorModule } from '../public-api';
+import { SAUFilterModule } from '../lib/filter';
 
-const meta: Meta<SAUSelectorModule> = {
-    title: 'Components/Selector',
-    component: SAUSelectorModule,
+const meta: Meta<SAUFilterModule> = {
+    title: 'Components/Filter',
+    component: SAUFilterModule,
     decorators: [
         moduleMetadata({
             imports: [
                 CommonModule,
                 ReactiveFormsModule,
-                SAUSelectorModule // Al ser standalone, se importa en la metadata del módulo ficticio
+                SAUFilterModule // Al ser standalone, se importa en la metadata del módulo ficticio
             ],
             providers: [
                 DatePipe,
@@ -40,10 +40,10 @@ const meta: Meta<SAUSelectorModule> = {
 };
 
 export default meta;
-type Story = StoryObj<SAUSelectorModule>;
+type Story = StoryObj<SAUFilterModule>;
 
 // Configuración de prueba dummy para renderizar varios tipos de inputs en la Story
-const defaultSelectorConfig = {
+const defaultFilterConfig = {
     order: ['buscar', 'estado', 'categorias', 'activo'],
     mobile: ['buscar', 'estado'], // Filtros visibles en responsive por defecto
     form: {
@@ -56,7 +56,7 @@ const defaultSelectorConfig = {
         estado: {
             name: 'Estado',
             key: 'status_id',
-            type: 'selectorSimple',
+            type: 'selectSimple',
             dropdowns: [
                 { id: 1, name: 'Activo' },
                 { id: 2, name: 'Inactivo' }
@@ -66,7 +66,7 @@ const defaultSelectorConfig = {
         categorias: {
             name: 'Categoría',
             key: 'categories',
-            type: 'selectorMultiple',
+            type: 'selectMultiple',
             dropdowns: [
                 { id: 10, name: 'Tecnología' },
                 { id: 20, name: 'Soporte' },
@@ -86,16 +86,16 @@ const defaultSelectorConfig = {
 export const Interactive: Story = {
     args: {
         searchButtonText: 'Search',
-        selectorConfig: defaultSelectorConfig
+        filterConfig: defaultFilterConfig
     },
     render: (args) => {
         // Usamos useArgs para poder capturar los cambios y mantener vivo el estado en la interfaz
-        const [{ selectorConfig }, updateArgs] = useArgs();
+        const [{ filterConfig }, updateArgs] = useArgs();
 
         return {
             props: {
                 ...args,
-                selectorConfig,
+                filterConfig,
                 // Capturamos el Output del componente cuando se procesan los filtros
                 onFilterProcessed: (event: { json: any, url: string }) => {
                     // 1. Imprime el resultado en tiempo real en la consola de Actions de Storybook
@@ -105,7 +105,7 @@ export const Interactive: Story = {
 
                     // 2. Si quisieras mutar dinámicamente alguna propiedad del config basada en la respuesta,
                     // podrías usar updateArgs aquí. Por ejemplo:
-                    // updateArgs({ selectorConfig: { ...selectorConfig, ultimoFiltro: event.json } });
+                    // updateArgs({ filterConfig: { ...filterConfig, ultimoFiltro: event.json } });
                 }
             }
         };

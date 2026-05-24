@@ -1,0 +1,48 @@
+<div class="sau-filter">
+    <form [formGroup]="filterForm" class="sau-filter">
+        <div class="sau-filter__grid">
+            @for (nameField of filterConfig?.order; track nameField) {
+
+            <!-- Inputs -->
+            @if (["inputText", "inputNumber", "date", "dateRange",
+            "inputCheckbox"].includes(filterConfig.form[nameField]?.type) && checkMobile(nameField)) {
+            <div class="sau-filter__item">
+                <custom-input [label]="filterConfig.form[nameField].name"
+                    [type]="filterConfig.form[nameField].type === 'inputNumber' ? 'number' : (filterConfig.form[nameField].type === 'inputCheckbox' ? 'checkbox' : 'text')"
+                    [formControlItem]="filterForm.controls[nameField]" autocomplete="off">
+                </custom-input>
+            </div>
+            }
+
+            <!-- Filter Simple -->
+            @if (filterConfig.form[nameField]?.type === 'selectSimple' && checkMobile(nameField)) {
+            <div class="sau-filter__item">
+                <custom-select [label]="filterConfig.form[nameField].name"
+                    [formControlItem]="filterForm.controls[nameField]" [options]="dropdowns[nameField]" bindValue="id"
+                    bindLabel="name" bindSubLabel="nif" [isMultiple]="false"
+                    searchPlaceholder="Busca o selecciona un cliente..." (selectionChange)="onChangeSelect()">
+                </custom-select>
+            </div>
+            }
+
+            <!-- Filter Múltiple -->
+            @if (filterConfig.form[nameField]?.type === 'selectMultiple' && checkMobile(nameField)) {
+            <div class="sau-filter__item">
+                <custom-select [label]="filterConfig.form[nameField].name"
+                    [formControlItem]="filterForm.controls[nameField]" [options]="dropdowns[nameField]" bindValue="id"
+                    bindLabel="name" bindSubLabel="nif" [isMultiple]="true"
+                    searchPlaceholder="Busca o selecciona un cliente..." (selectionChange)="onChangeSelect()">
+                </custom-select>
+            </div>
+            }
+            }
+        </div>
+
+        <!-- Botón para aplicar y generar URL/JSON -->
+        <div class="sau-filter__actions">
+            <button type="button" class="sau-filter__btn" (click)="processFilter()">
+                {{searchButtonText}}
+            </button>
+        </div>
+    </form>
+</div>

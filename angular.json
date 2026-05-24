@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "selector": {
+    "filter": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -51,10 +51,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "selector:build:production"
+              "buildTarget": "filter:build:production"
             },
             "development": {
-              "buildTarget": "selector:build:development"
+              "buildTarget": "filter:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -64,20 +64,20 @@
         }
       }
     },
-    "@some-angular-utils/selector": {
+    "@some-angular-utils/filter": {
       "projectType": "library",
-      "root": "projects/some-angular-utils/selector",
-      "sourceRoot": "projects/some-angular-utils/selector/src",
+      "root": "projects/some-angular-utils/filter",
+      "sourceRoot": "projects/some-angular-utils/filter/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
           "configurations": {
             "production": {
-              "tsConfig": "projects/some-angular-utils/selector/tsconfig.lib.prod.json"
+              "tsConfig": "projects/some-angular-utils/filter/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/some-angular-utils/selector/tsconfig.lib.json"
+              "tsConfig": "projects/some-angular-utils/filter/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -85,14 +85,14 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/some-angular-utils/selector/tsconfig.spec.json"
+            "tsConfig": "projects/some-angular-utils/filter/tsconfig.spec.json"
           }
         },
         "storybook": {
           "builder": "@storybook/angular:start-storybook",
           "options": {
-            "configDir": "projects/some-angular-utils/selector/.storybook",
-            "browserTarget": "@some-angular-utils/selector:build",
+            "configDir": "projects/some-angular-utils/filter/.storybook",
+            "browserTarget": "@some-angular-utils/filter:build",
             "compodoc": false,
             "port": 6006
           }
@@ -100,10 +100,10 @@
         "build-storybook": {
           "builder": "@storybook/angular:build-storybook",
           "options": {
-            "configDir": "projects/some-angular-utils/selector/.storybook",
-            "browserTarget": "@some-angular-utils/selector:build",
+            "configDir": "projects/some-angular-utils/filter/.storybook",
+            "browserTarget": "@some-angular-utils/filter:build",
             "compodoc": false,
-            "outputDir": "dist/storybook/@some-angular-utils/selector"
+            "outputDir": "dist/storybook/@some-angular-utils/filter"
           }
         }
       }

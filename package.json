@@ -1,16 +1,16 @@
 {
-  "name": "selector",
+  "name": "filter",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "dev": "npm run build:lib && npm run start",
-    "build": "ng build --base-href=/selector/",
+    "build": "ng build --base-href=/filter/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "build:lib": "ng-packagr -p projects/some-angular-utils/selector/ng-package.json",
-    "start:storybook": "ng run @some-angular-utils/selector:storybook",
-    "build:storybook": "ng run @some-angular-utils/selector:build-storybook"
+    "build:lib": "ng-packagr -p projects/some-angular-utils/filter/ng-package.json",
+    "start:storybook": "ng run @some-angular-utils/filter:storybook",
+    "build:storybook": "ng run @some-angular-utils/filter:build-storybook"
   },
   "prettier": {
     "printWidth": 100,

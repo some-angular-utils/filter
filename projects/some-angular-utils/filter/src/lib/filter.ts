@@ -7,9 +7,9 @@ import { CustomInputComponent } from './components/custom-input/custom-input.com
 import { CustomSelectComponent } from './components/custom-select/custom-select.component';
 
 @Component({
-  selector: 'sau-selector',
-  templateUrl: './selector.html',
-  styleUrls: ['./selector.scss'],
+  selector: 'sau-filter',
+  templateUrl: './filter.html',
+  styleUrls: ['./filter.scss'],
   providers: [DatePipe],
   imports: [
     CommonModule,
@@ -18,9 +18,9 @@ import { CustomSelectComponent } from './components/custom-select/custom-select.
     CustomSelectComponent
   ]
 })
-export class SAUSelectorModule {
+export class SAUFilterModule {
 
-  @Input() selectorConfig: any;
+  @Input() filterConfig: any;
   @Input() searchButtonText = 'Buscar'
   // Emite un objeto con la estructura JSON limpia y el String de la URL armada
   @Output() onFilterProcessed = new EventEmitter<{ json: any, url: string }>();
@@ -35,8 +35,8 @@ export class SAUSelectorModule {
 
   ngOnInit() {
 
-    if (this.selectorConfig?.mobile) {
-      this.arrayMobile = this.selectorConfig.mobile;
+    if (this.filterConfig?.mobile) {
+      this.arrayMobile = this.filterConfig.mobile;
     }
     this.buildFormStructure();
   }
@@ -81,15 +81,15 @@ export class SAUSelectorModule {
    * Crea dinámicamente los controles del formulario y mapea valores iniciales
    */
   private buildFormStructure() {
-    if (!this.selectorConfig || !this.selectorConfig.form) return;
+    if (!this.filterConfig || !this.filterConfig.form) return;
 
     const urlParams = new URLSearchParams(window.location.search);
-    const formConfig = this.selectorConfig.form;
+    const formConfig = this.filterConfig.form;
 
     Object.keys(formConfig).forEach(nameFilter => {
       const config = formConfig[nameFilter];
 
-      if (['selectorSimple', 'selectorMultiple'].includes(config.type)) {
+      if (['selectSimple', 'selectMultiple'].includes(config.type)) {
         this.dropdowns[nameFilter] = config.dropdowns || [];
       }
 
@@ -100,8 +100,8 @@ export class SAUSelectorModule {
 
       if (rawValue !== undefined && rawValue !== null && rawValue !== '') {
 
-        // 2. Si es un selector múltiple...
-        if (config.type === 'selectorMultiple') {
+        // 2. Si es un filter múltiple...
+        if (config.type === 'selectMultiple') {
           if (Array.isArray(rawValue)) {
             // Caso Storybook (Opción B): Ya viene como Array [10, 20]
             defaultValue = rawValue.map(e => this.convertToNumberFilter(e));
@@ -110,7 +110,7 @@ export class SAUSelectorModule {
             defaultValue = rawValue.split(',').map(e => this.convertToNumberFilter(e.trim()));
           }
         }
-        // 3. Caso para controles individuales (inputText, selectorSimple, etc.)
+        // 3. Caso para controles individuales (inputText, selectSimple, etc.)
         else {
           defaultValue = this.convertToNumberFilter(rawValue);
         }
@@ -128,11 +128,11 @@ export class SAUSelectorModule {
   /**
    * Procesa los inputs, limpia tipos de datos y genera el JSON junto a la URL
    */
-  public processFilters() {
-    if (!this.selectorConfig || !this.selectorConfig.form) return;
+  public processFilter() {
+    if (!this.filterConfig || !this.filterConfig.form) return;
 
     const jsonResult: any = {};
-    const formConfig = this.selectorConfig.form;
+    const formConfig = this.filterConfig.form;
 
     Object.keys(formConfig).forEach(nameField => {
       const configField = formConfig[nameField];
@@ -161,11 +161,11 @@ export class SAUSelectorModule {
           jsonResult[key] = this.datePipe.transform(value[0], 'yyyy-MM-dd');
           jsonResult[configField.keyTo] = this.datePipe.transform(value[1], 'yyyy-MM-dd');
 
-          // 4. Tratamiento para Selectores Múltiples (Arrays)
+          // 4. Tratamiento para Filteres Múltiples (Arrays)
         } else if (Array.isArray(value)) {
           jsonResult[key] = value.map(item => this.convertToNumberFilter(item));
 
-          // 5. Tratamiento para Inputs de texto/número y Selectores Simples
+          // 5. Tratamiento para Inputs de texto/número y Filteres Simples
         } else {
           jsonResult[key] = this.convertToNumberFilter(value);
         }
@@ -190,7 +190,7 @@ export class SAUSelectorModule {
     Object.keys(paramsObject).forEach(key => {
       const val = paramsObject[key];
       if (val !== undefined && val !== null && val !== '') {
-        // Si es un array de IDs (selectores múltiples), los une separados por comas
+        // Si es un array de IDs (filteres múltiples), los une separados por comas
         const formattedVal = Array.isArray(val) ? val.join(',') : val;
         pairs.push(`${encodeURIComponent(key)}=${encodeURIComponent(formattedVal)}`);
       }
@@ -201,11 +201,11 @@ export class SAUSelectorModule {
   // --- Helpers de UI y Mobile ---
   public onChangeSelect() {
     // Si prefieres procesamiento instantáneo al cambiar un select, descomenta la siguiente línea:
-    // this.processFilters();
+    // this.processFilter();
   }
 
   public showMoreFilter(show: boolean) {
-    this.arrayMobile = show ? [] : (this.selectorConfig.mobile || []);
+    this.arrayMobile = show ? [] : (this.filterConfig.mobile || []);
   }
 
   public checkMobile(nameFilter: string): boolean {

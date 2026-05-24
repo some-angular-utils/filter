@@ -4,8 +4,8 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
-      "@some-angular-utils/selector": [
-        "./dist/some-angular-utils/selector"
+      "@some-angular-utils/filter": [
+        "./dist/some-angular-utils/filter"
       ]
     },
     "strict": true,
@@ -35,10 +35,10 @@
       "path": "./tsconfig.spec.json"
     },
     {
-      "path": "./projects/some-angular-utils/selector/tsconfig.lib.json"
+      "path": "./projects/some-angular-utils/filter/tsconfig.lib.json"
     },
     {
-      "path": "./projects/some-angular-utils/selector/tsconfig.spec.json"
+      "path": "./projects/some-angular-utils/filter/tsconfig.spec.json"
     }
   ]
 }

@@ -27,4 +27,4 @@ jobs:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist/storybook/@some-angular-utils/selector # The folder the action should deploy.
+          folder: dist/storybook/@some-angular-utils/filter # The folder the action should deploy.
