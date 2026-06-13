@@ -140,8 +140,8 @@ export class SAUFilterModule {
       let value = control.value;
 
       // 1. Tratamiento para Checkbox
-      if (configField.type === 'inputCheckbox') {
-        jsonResult[key] = value ? '1' : '0';
+      if (configField.type === 'inputCheckbox' && value != undefined) {
+        jsonResult[key] = value ? true : false;
         return;
       }
 
