@@ -132,6 +132,16 @@ export class DateRangeInputComponent {
                 const end = new Date(now.getFullYear(), 11, 31); end.setHours(23, 59, 59, 999);
                 return [start, end];
             }
+        },
+        {
+            label: 'Próximo año',
+            value: 'nextYear',
+            getRange: () => {
+                const now = new Date();
+                const start = new Date(now.getFullYear() + 1, 0, 1); start.setHours(0, 0, 0, 0);
+                const end = new Date(now.getFullYear() + 1, 11, 31); end.setHours(23, 59, 59, 999);
+                return [start, end];
+            }
         }
     ];
 
