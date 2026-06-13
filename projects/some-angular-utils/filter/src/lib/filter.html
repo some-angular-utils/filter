@@ -1,11 +1,30 @@
 <div class="sau-filter">
-    <form [formGroup]="filterForm" class="sau-filter">
+    <form [formGroup]="filterForm" class="sau-filter__form">
         <div class="sau-filter__grid">
             @for (nameField of filterConfig?.order; track nameField) {
 
+            <!-- Date Range Input -->
+            @if (filterConfig.form[nameField]?.type === 'dateRange' && checkMobile(nameField)) {
+            <div class="sau-filter__item">
+                <date-range-input [label]="filterConfig.form[nameField].name"
+                    [formControlItem]="filterForm.controls[nameField]">
+                </date-range-input>
+            </div>
+            }
+
+            <!-- Date Input -->
+            @if (filterConfig.form[nameField]?.type === 'date' && checkMobile(nameField) &&
+            filterConfig.form[nameField]?.type !== 'dateRange') {
+            <div class="sau-filter__item">
+                <custom-input [label]="filterConfig.form[nameField].name" [type]="'date'"
+                    [formControlItem]="filterForm.controls[nameField]" autocomplete="off">
+                </custom-input>
+            </div>
+            }
+
             <!-- Inputs -->
-            @if (["inputText", "inputNumber", "date", "dateRange",
-            "inputCheckbox"].includes(filterConfig.form[nameField]?.type) && checkMobile(nameField)) {
+            @if (["inputText", "inputNumber", "inputCheckbox"].includes(filterConfig.form[nameField]?.type) &&
+            checkMobile(nameField)) {
             <div class="sau-filter__item">
                 <custom-input [label]="filterConfig.form[nameField].name"
                     [type]="filterConfig.form[nameField].type === 'inputNumber' ? 'number' : (filterConfig.form[nameField].type === 'inputCheckbox' ? 'checkbox' : 'text')"
@@ -36,10 +55,8 @@
             </div>
             }
             }
-        </div>
 
-        <!-- Botón para aplicar y generar URL/JSON -->
-        <div class="sau-filter__actions">
+            <!-- Botón para aplicar y generar URL/JSON -->
             <button type="button" class="sau-filter__btn" (click)="processFilter()">
                 {{searchButtonText}}
             </button>

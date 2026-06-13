@@ -2,9 +2,9 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 
-// Tus dos componentes exclusivos
 import { CustomInputComponent } from './components/custom-input/custom-input.component';
 import { CustomSelectComponent } from './components/custom-select/custom-select.component';
+import { DateRangeInputComponent } from './components/date-range-input/date-range-input.component';
 
 @Component({
   selector: 'sau-filter',
@@ -15,7 +15,8 @@ import { CustomSelectComponent } from './components/custom-select/custom-select.
     CommonModule,
     ReactiveFormsModule,
     CustomInputComponent,
-    CustomSelectComponent
+    CustomSelectComponent,
+    DateRangeInputComponent
   ]
 })
 export class SAUFilterModule {
@@ -156,10 +157,13 @@ export class SAUFilterModule {
         if (configField.type === 'date' && value instanceof Date) {
           jsonResult[key] = this.datePipe.transform(value, 'yyyy-MM-dd');
 
-          // 3. Tratamiento para Rango de fechas
+          // 3. Tratamiento para Rango de fechas (array de dos fechas)
         } else if (configField.type === 'dateRange' && Array.isArray(value) && value.length === 2) {
-          jsonResult[key] = this.datePipe.transform(value[0], 'yyyy-MM-dd');
-          jsonResult[configField.keyTo] = this.datePipe.transform(value[1], 'yyyy-MM-dd');
+          const [startDate, endDate] = value;
+          if (startDate instanceof Date && endDate instanceof Date) {
+            jsonResult[key] = this.datePipe.transform(startDate, 'yyyy-MM-dd');
+            jsonResult[configField.keyTo || `${key}_end`] = this.datePipe.transform(endDate, 'yyyy-MM-dd');
+          }
 
           // 4. Tratamiento para Filteres Múltiples (Arrays)
         } else if (Array.isArray(value)) {

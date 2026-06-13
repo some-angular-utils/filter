@@ -1,0 +1,157 @@
+<div class="date-range-input">
+    @if(label){
+    <label class="date-range-input__label">{{ label }}</label>
+    }
+
+    <div class="date-range-input__field">
+        <button type="button" class="date-range-input__input" (click)="toggleDropdown()"
+            [class.date-range-input__input--active]="showDropdown() || showCalendar()">
+            <span class="date-range-input__text">{{ displayDate() }}</span>
+            <span class="date-range-input__chevron">▼</span>
+        </button>
+
+        @if(showDropdown()){
+        <div class="date-range-input__dropdown">
+            <div class="date-range-input__dropdown-header">Intervalos rápidos</div>
+            @for (option of dateRangeOptions; track $index) {
+            <button type="button" class="date-range-input__option" (click)="selectPresetRange(option)">
+                {{ option.label }}
+            </button>
+            }
+
+
+            <div class="date-range-input__divider"></div>
+
+            <button type="button" class="date-range-input__option date-range-input__option--custom"
+                (click)="openCustomRange()">
+                Rango personalizado
+            </button>
+
+            <div class="date-range-input__divider"></div>
+
+            @if(startDate() && endDate()){
+            <button type="button" class="date-range-input__option date-range-input__option--danger"
+                (click)="clearSelection()">
+                ✕ Limpiar selección
+            </button>
+            }
+
+        </div>
+        }
+
+        @if(showCalendar()){
+        <div class="date-range-input__calendar-panel">
+            <div class="date-range-input__calendar-header">
+                <h3>Selecciona fechas</h3>
+                <button type="button" class="date-range-input__back-btn" (click)="backToPresets()">
+                    ◄ Volver
+                </button>
+            </div>
+
+            <div class="date-range-input__calendar-body">
+
+                <!-- <div class="date-range-input__selection-info">
+                    <div class="date-range-input__selection-status">
+                        <span *ngIf="!selectingEndDate()" class="date-range-input__badge">
+                            Selecciona fecha de inicio
+                        </span>
+                        <span *ngIf="selectingEndDate()"
+                            class="date-range-input__badge date-range-input__badge--secondary">
+                            Selecciona fecha de fin
+                        </span>
+                    </div>
+                    <div class="date-range-input__selected-dates" *ngIf="startDate()">
+                        <span *ngIf="startDate()" class="date-range-input__date-pill">
+                            Ini: {{ formatDate(startDate()!) }}
+                        </span>
+                        <span *ngIf="endDate()" class="date-range-input__date-pill">
+                            Fin: {{ formatDate(endDate()!) }}
+                        </span>
+                    </div>
+                </div> -->
+
+                <div class="date-range-input__months-container">
+
+                    <div class="date-range-input__calendar-month">
+                        <div class="date-range-input__month-header">
+                            <button type="button" class="date-range-input__month-nav"
+                                (click)="previousMonth()">◄</button>
+                            <h4 class="date-range-input__month-title">{{ getMonthYear(currentMonth()) | titlecase }}
+                            </h4>
+                            <button type="button"
+                                class="date-range-input__month-nav date-range-input__month-nav--desktop-hidden"
+                                (click)="nextMonth()">►</button>
+                        </div>
+
+                        <div class="date-range-input__weekdays">
+                            @for (day of getWeekDays(); track $index) {
+                            <div class="date-range-input__weekday">{{ day }}</div>
+                            }
+                        </div>
+
+                        <div class="date-range-input__days" (mouseleave)="onDaysMouseLeave()">
+                            @for (day of getDaysInMonth(currentMonth()); track $index) {
+                            <button type="button" class="date-range-input__day"
+                                [class.date-range-input__day--empty]="!day"
+                                [class.date-range-input__day--selected]="isDateSelected(day, currentMonth())"
+                                [class.date-range-input__day--hovered]="isDateHovered(day, currentMonth())"
+                                [class.date-range-input__day--start]="isDateStart(day, currentMonth())"
+                                [class.date-range-input__day--end]="isDateEnd(day, currentMonth())" [disabled]="!day"
+                                (mouseenter)="onDayMouseEnter(day, currentMonth())"
+                                (click)="selectDateFromDay(day, currentMonth())">
+                                {{ day }}
+                            </button>
+                            }
+
+                        </div>
+                    </div>
+
+                    <div class="date-range-input__calendar-month date-range-input__calendar-month--next">
+                        <div class="date-range-input__month-header">
+                            <button type="button"
+                                class="date-range-input__month-nav date-range-input__month-nav--desktop-hidden"
+                                (click)="previousMonth()">◄</button>
+                            <h4 class="date-range-input__month-title">{{ getMonthYear(nextMonthComputed()) | titlecase
+                                }}</h4>
+                            <button type="button" class="date-range-input__month-nav" (click)="nextMonth()">►</button>
+                        </div>
+
+                        <div class="date-range-input__weekdays">
+                            @for (day of getWeekDays(); track $index) {
+                            <div class="date-range-input__weekday">{{ day }}</div>
+                            }
+                        </div>
+
+                        <div class="date-range-input__days" (mouseleave)="onDaysMouseLeave()">
+                            @for (day of getDaysInMonth(nextMonthComputed()); track $index) {
+                            <button type="button" class="date-range-input__day"
+                                [class.date-range-input__day--empty]="!day"
+                                [class.date-range-input__day--selected]="isDateSelected(day, nextMonthComputed())"
+                                [class.date-range-input__day--hovered]="isDateHovered(day, nextMonthComputed())"
+                                [class.date-range-input__day--start]="isDateStart(day, nextMonthComputed())"
+                                [class.date-range-input__day--end]="isDateEnd(day, nextMonthComputed())"
+                                [disabled]="!day" (mouseenter)="onDayMouseEnter(day, nextMonthComputed())"
+                                (click)="selectDateFromDay(day, nextMonthComputed())">
+                                {{ day }}
+                            </button>
+                            }
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="date-range-input__calendar-footer">
+                <button type="button" class="date-range-input__btn-secondary" (click)="closeCalendar()">
+                    Cancelar
+                </button>
+                <button type="button" class="date-range-input__btn-primary" [disabled]="!startDate() || !endDate()"
+                    (click)="applyCustomRange()">
+                    Aplicar
+                </button>
+            </div>
+        </div>
+        }
+    </div>
+</div>

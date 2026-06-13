@@ -1,0 +1,417 @@
+.date-range-input {
+    --color-primary: rgb(147, 51, 234);
+    --color-primary-light: rgb(167, 100, 244);
+    --color-background: rgb(255, 255, 255);
+    --color-text: rgb(31, 41, 55);
+    --color-text-light: rgb(107, 114, 128);
+    --color-border: rgb(229, 231, 235);
+    --color-hover: rgb(249, 250, 251);
+    --color-selected: rgb(243, 232, 255);
+    --color-danger: rgb(239, 68, 68);
+    --color-shadow: rgba(0, 0, 0, 0.1);
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    &__label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--color-text);
+    }
+
+    &__field {
+        position: relative;
+    }
+
+    &__input {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+        border: 1px solid var(--color-border);
+        border-radius: 1rem;
+        background-color: var(--color-background);
+        color: var(--color-text);
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: var(--color-primary);
+            background-color: var(--color-hover);
+        }
+
+        &--active {
+            border-color: var(--color-primary);
+            background-color: var(--color-selected);
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+        }
+    }
+
+    &__text {
+        flex: 1;
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__chevron {
+        font-size: 0.75rem;
+        color: var(--color-text-light);
+        transition: transform 0.2s;
+    }
+
+    &__input--active &__chevron {
+        transform: rotate(180deg);
+    }
+
+    /* Desplegables Absolutos */
+    &__dropdown,
+    &__calendar-panel {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 10;
+        margin-top: 0.5rem;
+        background-color: var(--color-background);
+        border: 1px solid var(--color-border);
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 25px var(--color-shadow);
+        animation: slideDown 0.15s ease-out;
+    }
+
+    &__dropdown {
+        right: 0;
+    }
+
+    &__dropdown-header {
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--color-text-light);
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    &__option {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: none;
+        border: none;
+        color: var(--color-text);
+        font-size: 0.9375rem;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background-color: var(--color-hover);
+            color: var(--color-primary);
+        }
+
+        &--custom {
+            font-weight: 600;
+            color: var(--color-primary);
+            padding: 1rem;
+
+            &:hover {
+                background-color: var(--color-selected);
+            }
+        }
+
+        &--danger {
+            color: var(--color-danger);
+
+            &:hover {
+                background-color: rgba(239, 68, 68, 0.05);
+            }
+        }
+    }
+
+    &__divider {
+        height: 1px;
+        background-color: var(--color-border);
+        margin: 0.25rem 0;
+    }
+
+    /* ======================================================
+     MÓVIL POR DEFECTO: Un mes en vertical ancho fijo
+     ====================================================== */
+    &__calendar-panel {
+        width: 320px;
+    }
+
+    &__calendar-month {
+        &--next {
+            display: none;
+        }
+    }
+
+    /* ======================================================
+     ESCRITORIO: Doble mes horizontal vía Grid con Media Query
+     ====================================================== */
+    @media (min-width: 768px) {
+        &__calendar-panel {
+            width: 660px;
+        }
+
+        &__months-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        &__calendar-month {
+            &--next {
+                display: block;
+            }
+        }
+
+        &__month-nav {
+            &--desktop-hidden {
+                visibility: hidden;
+                pointer-events: none;
+            }
+        }
+    }
+
+    /* Cabecera interna del calendario */
+    &__calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+        color: white;
+
+        h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+    }
+
+    &__back-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        font-size: 0.75rem;
+        color: white;
+        font-weight: 600;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    }
+
+    &__calendar-body {
+        padding: 1rem;
+    }
+
+    &__selection-info {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background-color: var(--color-hover);
+        border-radius: 0.5rem;
+        border-left: 4px solid var(--color-primary);
+    }
+
+    &__badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        background-color: var(--color-primary);
+        color: white;
+        border-radius: 1rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+
+        &--secondary {
+            background-color: rgb(59, 130, 246);
+        }
+    }
+
+    &__selected-dates {
+        display: flex;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+    }
+
+    &__date-pill {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        background-color: white;
+        border: 1px solid var(--color-border);
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--color-text);
+    }
+
+    &__month-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    &__month-nav {
+        background: none;
+        border: none;
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        color: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+            background-color: var(--color-hover);
+        }
+    }
+
+    &__month-title {
+        margin: 0;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--color-text);
+        text-align: center;
+    }
+
+    &__weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    &__weekday {
+        text-align: center;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--color-text-light);
+    }
+
+    &__days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.25rem;
+    }
+
+    /* Días celdas unitarias */
+    &__day {
+        aspect-ratio: 1;
+        border: 1px solid var(--color-border);
+        border-radius: 0.25rem;
+        background-color: var(--color-background);
+        color: var(--color-text);
+        cursor: pointer;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        transition: background-color 0.1s ease, color 0.1s ease;
+
+        // Hover seguro: No rompe los estilos de los extremos seleccionados
+        &:hover:not(&--empty):not(&--start):not(&--end):not(&--selected) {
+            background-color: var(--color-hover);
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        &--empty {
+            background-color: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        /* Rango visual transitorio en Hover */
+        &--hovered:not(&--empty):not(&--start):not(&--end) {
+            background-color: var(--color-selected);
+            color: var(--color-primary);
+            border-color: var(--color-primary-light);
+            border-radius: 0;
+        }
+
+        &--selected {
+            background-color: var(--color-selected);
+            color: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        /* Protección del fondo de los límites elegidos */
+        &--start,
+        &--end {
+            background-color: var(--color-primary) !important;
+            color: white !important;
+            border-color: var(--color-primary) !important;
+            font-weight: 700;
+            opacity: 1 !important;
+        }
+
+        &--start {
+            border-radius: 0.25rem 0 0 0.25rem;
+        }
+
+        &--end {
+            border-radius: 0 0.25rem 0.25rem 0;
+        }
+    }
+
+    &__calendar-footer {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background-color: var(--color-hover);
+        border-top: 1px solid var(--color-border);
+        justify-content: flex-end;
+    }
+
+    &__btn-primary,
+    &__btn-secondary {
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    &__btn-primary {
+        background-color: var(--color-primary);
+        color: white;
+    }
+
+    &__btn-secondary {
+        background-color: var(--color-border);
+        color: var(--color-text);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
