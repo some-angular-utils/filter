@@ -117,11 +117,6 @@ export class SAUFilterModule {
         }
       }
 
-      // 4. Parche específico para Checkbox: asegurar booleano puro
-      if (config.type === 'inputCheckbox') {
-        defaultValue = (defaultValue === true || defaultValue === '1' || defaultValue === 1);
-      }
-
       this.filterForm.addControl(nameFilter, new FormControl(defaultValue));
     });
   }

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, computed, effect } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, computed, effect, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormControl, ReactiveFormsModule } from '@angular/forms';
 
@@ -23,8 +23,12 @@ export class DateRangeInputComponent {
     @Input() set formControlItem(ctrl: AbstractControl) {
         this._formControlItem = ctrl;
         this.inputControl = ctrl as FormControl;
-        if (this.inputControl && this.inputControl.value !== undefined) {
-            this.inputControl.setValue(this.inputControl.value, { emitEvent: false });
+        if (this.inputControl && this.inputControl.value) {
+            const currentVal = this.inputControl.value;
+            if (Array.isArray(currentVal) && currentVal[0] && currentVal[1]) {
+                this.startDate.set(new Date(currentVal[0]));
+                this.endDate.set(new Date(currentVal[1]));
+            }
         }
     }
 
@@ -32,7 +36,6 @@ export class DateRangeInputComponent {
     @Output() onClick = new EventEmitter<any>();
     inputControl!: FormControl;
 
-    // Signals de Control de Estados
     showDropdown = signal(false);
     showCalendar = signal(false);
     selectedMode = signal<'preset' | 'custom'>('preset');
@@ -40,9 +43,8 @@ export class DateRangeInputComponent {
     endDate = signal<Date | null>(null);
     currentMonth = signal(new Date());
     selectingEndDate = signal(false);
-    hoveredDate = signal<Date | null>(null); // Rastreador de hover para renderizado de rango continuo
+    hoveredDate = signal<Date | null>(null);
 
-    // Computada para resolver dinámicamente el mes contiguo de la derecha
     nextMonthComputed = computed(() => {
         const date = new Date(this.currentMonth());
         date.setMonth(date.getMonth() + 1);
@@ -52,16 +54,25 @@ export class DateRangeInputComponent {
     displayDate = computed(() => {
         const start = this.startDate();
         const end = this.endDate();
-        if (!start || !end) return this.placeholder;
+        if (!start || !end) return '';
         return `${this.formatDate(start)} - ${this.formatDate(end)}`;
     });
 
-    constructor() {
+    constructor(private elementRef: ElementRef) {
         effect(() => {
             if (this.showCalendar()) {
                 this.selectingEndDate.set(false);
             }
         });
+    }
+
+    @HostListener('document:click', ['$event'])
+    clickOut(event: MouseEvent) {
+        if (!this.elementRef.nativeElement.contains(event.target)) {
+            this.showDropdown.set(false);
+            this.showCalendar.set(false);
+            this.hoveredDate.set(null);
+        }
     }
 
     dateRangeOptions: DateRangeOption[] = [
@@ -124,7 +135,8 @@ export class DateRangeInputComponent {
         }
     ];
 
-    toggleDropdown() {
+    toggleDropdown(event: MouseEvent) {
+        event.stopPropagation();
         if (this.showCalendar()) {
             this.showCalendar.set(false);
             this.showDropdown.set(false);
@@ -184,7 +196,7 @@ export class DateRangeInputComponent {
                 this.endDate.set(endOfDay);
             }
             this.selectingEndDate.set(false);
-            this.hoveredDate.set(null); // Limpieza post-selección
+            this.hoveredDate.set(null);
         }
     }
 
@@ -194,7 +206,6 @@ export class DateRangeInputComponent {
         this.selectDate(date);
     }
 
-    /* Gestores de eventos de Mouse para Rango Dinámico en Hover */
     onDayMouseEnter(day: number | null, contextMonth: Date) {
         if (!day || !this.selectingEndDate() || !this.startDate()) return;
         const date = new Date(contextMonth.getFullYear(), contextMonth.getMonth(), day);
@@ -213,7 +224,6 @@ export class DateRangeInputComponent {
 
         const date = new Date(contextMonth.getFullYear(), contextMonth.getMonth(), day);
 
-        // Si se hace un hover hacia atrás respecto al día de inicio, invierte la dirección visual del tramo
         if (hover < start) {
             return date >= hover && date <= start;
         }
@@ -239,7 +249,7 @@ export class DateRangeInputComponent {
         const lastDay = new Date(year, month + 1, 0);
 
         let startDate = firstDay.getDay();
-        startDate = startDate === 0 ? 6 : startDate - 1; // Ajuste inicial a Lunes
+        startDate = startDate === 0 ? 6 : startDate - 1;
 
         const daysInMonth = lastDay.getDate();
         const days: (number | null)[] = [];
@@ -293,12 +303,21 @@ export class DateRangeInputComponent {
         }
     }
 
-    clearSelection() {
+    clearSelectionFromPresets() {
         this.startDate.set(null);
         this.endDate.set(null);
         this.selectingEndDate.set(false);
         this.hoveredDate.set(null);
         this.updateFormControl([null, null] as any);
         this.showDropdown.set(false);
+    }
+
+    clearSelection() {
+        this.startDate.set(null);
+        this.endDate.set(null);
+        this.selectingEndDate.set(false);
+        this.hoveredDate.set(null);
+        this.updateFormControl([null, null] as any);
+        this.showCalendar.set(false);
     }
 }

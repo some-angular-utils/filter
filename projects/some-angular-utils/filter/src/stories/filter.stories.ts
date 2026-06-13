@@ -74,7 +74,7 @@ const defaultFilterConfig = {
             name: 'Activo',
             key: 'is_active',
             type: 'inputCheckbox',
-            defaultValue: 0
+            defaultValue: true
         }
     }
 };
@@ -256,7 +256,6 @@ export const CustomerFilter: Story = {
                     name: 'Premium',
                     key: 'is_premium',
                     type: 'inputCheckbox',
-                    defaultValue: 0
                 }
             }
         }

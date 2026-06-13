@@ -1,15 +1,37 @@
 @if(formControlItem){
-<div class="sau-input">
-    
+<div class="sau-input" [class.sau-input--slide-tri-state]="type === 'checkbox'">
+
+    @if (type !== 'checkbox') {
     <label class="sau-input__label">
-        
         <span class="sau-input__title">{{label}}</span>
-    
-        <input [type]="type" 
-            [placeholder]="placeholder" 
-            [formControl]="inputControl" 
-            class="sau-input__field">
+        <input [type]="type" [placeholder]="placeholder" [formControl]="inputControl" class="sau-input__field">
     </label>
+    } @else {
+    <div class="sau-input__label">
+        <span class="sau-input__title">{{label}}</span>
+
+        <div class="sau-input__slider-container">
+            <div class="sau-input__slider-track" [class.is-true]="inputControl.value === true"
+                [class.is-false]="inputControl.value === false"
+                [class.is-unspecified]="inputControl.value === null || inputControl.value === undefined"
+                (click)="toggleTriState($event)">
+
+                <div class="sau-input__slider-handle">
+                    @if (inputControl.value === true) { <span class="sau-input__handle-icon">✓</span> }
+                    @if (inputControl.value === false) { <span class="sau-input__handle-icon">✕</span> }
+                    @if (inputControl.value === null || inputControl.value === undefined) { <span
+                        class="sau-input__handle-icon">-</span> }
+                </div>
+            </div>
+
+            <span class="sau-input__slider-status-text">
+                @if (inputControl.value === true) { Activo }
+                @if (inputControl.value === false) { Inactivo }
+                @if (inputControl.value === null || inputControl.value === undefined) { Sin especificar }
+            </span>
+        </div>
+    </div>
+    }
 
     @if(formControlItem.invalid && (formControlItem.touched || formControlItem.dirty)){
     <div class="sau-input__error">

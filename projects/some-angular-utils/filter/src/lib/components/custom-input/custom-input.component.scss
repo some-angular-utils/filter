@@ -1,31 +1,36 @@
 .sau-input {
-    display: block;
+    display: flex;
+    flex-direction: column;
     font-size: 0.875rem;
     color: #000000;
     letter-spacing: -0.025em;
+    width: 100%;
+    position: relative;
 
     &__label {
         font-weight: bold;
-        display: block;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
     }
 
     &__title {
         display: block;
+        font-size: 0.875rem;
     }
 
     &__field {
-        width: calc(100% - 0.75rem);
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-        padding-top: 0.25rem;
-        padding-bottom: 0.25rem;
-        font-size: 0.75rem;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.65rem 0.75rem;
+        font-size: 0.8125rem;
         color: #334155;
         background-color: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-radius: 0.75rem;
+        border-radius: 0.5rem;
         outline: none;
-        transition: all 0.1s ease-in;
+        transition: all 0.15s ease;
 
         &::placeholder {
             color: #a3a3a3;
@@ -37,16 +42,99 @@
 
         &:focus {
             outline: none;
-            border-color: #000000;
-            box-shadow: 0 0 0 1px #000000,
-                0 10px 15px -3px rgba(0, 0, 0, 0.05),
-                0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            border-color: rgb(147, 51, 234);
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+            background-color: #ffffff;
         }
     }
 
+    /* --- ARQUITECTURA DEL SLIDE TRI-STATE COMPACTO --- */
+    &__slider-container {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        min-height: 38px;
+        box-sizing: border-box;
+    }
+
+    &__slider-track {
+        position: relative;
+        width: 54px;
+        height: 22px;
+        background-color: #e2e8f0;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid #cbd5e1;
+        box-sizing: border-box;
+
+        &.is-false {
+            background-color: #fca5a5;
+            border-color: #f87171;
+        }
+
+        &.is-unspecified {
+            background-color: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+
+        &.is-true {
+            background-color: rgb(233, 213, 255);
+            border-color: rgb(168, 85, 247);
+        }
+    }
+
+    &__slider-handle {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s;
+
+        .is-false & {
+            transform: translateX(0px);
+            color: #dc2626;
+        }
+
+        .is-unspecified & {
+            transform: translateX(16px);
+            /* Centro exacto */
+            color: #64748b;
+        }
+
+        .is-true & {
+            transform: translateX(32px);
+            color: rgb(147, 51, 234);
+            background-color: rgb(147, 51, 234);
+        }
+    }
+
+    &__handle-icon {
+        font-size: 0.6rem;
+        font-weight: bold;
+        user-select: none;
+
+        .is-true & {
+            color: #ffffff;
+        }
+    }
+
+    &__slider-status-text {
+        font-size: 0.75rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
     &__error {
-        color: #dc2626; // text-red-600
-        font-size: 0.75rem; // text-xs
-        margin-top: 0.25rem; // mt-1
+        color: #dc2626;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
     }
 }

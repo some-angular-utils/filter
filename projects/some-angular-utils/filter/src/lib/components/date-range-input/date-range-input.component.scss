@@ -1,417 +1,338 @@
-.date-range-input {
-    --color-primary: rgb(147, 51, 234);
-    --color-primary-light: rgb(167, 100, 244);
-    --color-background: rgb(255, 255, 255);
-    --color-text: rgb(31, 41, 55);
-    --color-text-light: rgb(107, 114, 128);
-    --color-border: rgb(229, 231, 235);
-    --color-hover: rgb(249, 250, 251);
-    --color-selected: rgb(243, 232, 255);
-    --color-danger: rgb(239, 68, 68);
-    --color-shadow: rgba(0, 0, 0, 0.1);
-
-    position: relative;
+.sau-date-range {
     display: flex;
     flex-direction: column;
+    font-size: 0.875rem;
+    color: #000000;
+    letter-spacing: -0.025em;
+    width: 100%;
+    position: relative;
 
     &__label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 0.5rem;
         font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--color-text);
+        cursor: pointer;
     }
 
-    &__field {
+    &__wrapper {
         position: relative;
+        width: 100%;
+        cursor: pointer;
     }
 
     &__input {
         width: 100%;
+        box-sizing: border-box;
+        padding: 0.65rem 2.5rem 0.65rem 0.75rem;
+        font-size: 0.8125rem;
+        color: #334155;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        outline: none;
+        transition: all 0.15s ease;
+        cursor: pointer;
+
+        &:focus {
+            border-color: rgb(147, 51, 234);
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+            background-color: #ffffff;
+        }
+
+        &.is-active-view {
+            font-weight: 500;
+            color: #0f172a;
+            background-color: #ffffff;
+            border-color: #cbd5e1;
+        }
+    }
+
+    &__arrow {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1rem;
+        height: 1rem;
+        color: #64748b;
+        pointer-events: none;
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-        padding-top: 0.25rem;
-        padding-bottom: 0.25rem;
-        border: 1px solid var(--color-border);
-        border-radius: 1rem;
-        background-color: var(--color-background);
-        color: var(--color-text);
-        font-size: 0.9375rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
+        justify-content: center;
 
-        &:hover {
-            border-color: var(--color-primary);
-            background-color: var(--color-hover);
+        svg {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.2s ease;
+
+            &.is-open {
+                transform: rotate(180deg);
+            }
         }
-
-        &--active {
-            border-color: var(--color-primary);
-            background-color: var(--color-selected);
-            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
-        }
-    }
-
-    &__text {
-        flex: 1;
-        text-align: left;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    &__chevron {
-        font-size: 0.75rem;
-        color: var(--color-text-light);
-        transition: transform 0.2s;
-    }
-
-    &__input--active &__chevron {
-        transform: rotate(180deg);
-    }
-
-    /* Desplegables Absolutos */
-    &__dropdown,
-    &__calendar-panel {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        z-index: 10;
-        margin-top: 0.5rem;
-        background-color: var(--color-background);
-        border: 1px solid var(--color-border);
-        border-radius: 0.5rem;
-        box-shadow: 0 10px 25px var(--color-shadow);
-        animation: slideDown 0.15s ease-out;
     }
 
     &__dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
         right: 0;
-    }
-
-    &__dropdown-header {
-        padding: 0.75rem 1rem;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--color-text-light);
-        border-bottom: 1px solid var(--color-border);
+        z-index: 50;
+        margin-top: 0.25rem;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        padding: 0.25rem 0;
     }
 
     &__option {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         width: 100%;
-        padding: 0.75rem 1rem;
+        padding: 0.65rem 0.75rem;
         background: none;
         border: none;
-        color: var(--color-text);
-        font-size: 0.9375rem;
         text-align: left;
         cursor: pointer;
-        transition: all 0.2s ease;
+        font-size: 0.8125rem;
+        color: #334155;
+        transition: background 0.1s ease;
 
         &:hover {
-            background-color: var(--color-hover);
-            color: var(--color-primary);
+            background-color: #f1f5f9;
         }
 
-        &--custom {
-            font-weight: 600;
-            color: var(--color-primary);
-            padding: 1rem;
+        &.is-clear-trigger {
+            font-weight: 500;
+            color: #dc2626;
 
             &:hover {
-                background-color: var(--color-selected);
+                background-color: #fef2f2;
             }
         }
 
-        &--danger {
-            color: var(--color-danger);
+        &.is-custom-trigger {
+            font-weight: 500;
+            color: rgb(147, 51, 234);
 
             &:hover {
-                background-color: rgba(239, 68, 68, 0.05);
+                background-color: rgb(250, 245, 255);
             }
         }
     }
 
     &__divider {
-        height: 1px;
-        background-color: var(--color-border);
+        border: 0;
+        border-top: 1px solid #e2e8f0;
         margin: 0.25rem 0;
     }
 
-    /* ======================================================
-     MÓVIL POR DEFECTO: Un mes en vertical ancho fijo
-     ====================================================== */
-    &__calendar-panel {
-        width: 320px;
-    }
+    /* Vista Expandida de Calendario + Responsive Móvil */
+    &__calendar-popover {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        /* Alineado a la izquierda */
+        z-index: 50;
+        margin-top: 0.25rem;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.65rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        padding: 1.25rem;
+        width: 540px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        cursor: default;
+        box-sizing: border-box;
 
-    &__calendar-month {
-        &--next {
-            display: none;
+        @media (max-width: 768px) {
+            width: calc(100vw - 2rem);
+            max-width: 340px;
+            left: 50%;
+            /* Centrado en pantallas móviles */
+            transform: translateX(-50%);
         }
     }
 
-    /* ======================================================
-     ESCRITORIO: Doble mes horizontal vía Grid con Media Query
-     ====================================================== */
-    @media (min-width: 768px) {
-        &__calendar-panel {
-            width: 660px;
-        }
-
-        &__months-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        &__calendar-month {
-            &--next {
-                display: block;
-            }
-        }
-
-        &__month-nav {
-            &--desktop-hidden {
-                visibility: hidden;
-                pointer-events: none;
-            }
-        }
-    }
-
-    /* Cabecera interna del calendario */
     &__calendar-header {
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        padding: 1rem;
-        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-        color: white;
-
-        h3 {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 700;
-        }
+        align-items: center;
     }
 
     &__back-btn {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        font-size: 0.75rem;
-        color: white;
-        font-weight: 600;
-
-        &:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-    }
-
-    &__calendar-body {
-        padding: 1rem;
-    }
-
-    &__selection-info {
-        margin-bottom: 1rem;
-        padding: 0.75rem;
-        background-color: var(--color-hover);
-        border-radius: 0.5rem;
-        border-left: 4px solid var(--color-primary);
-    }
-
-    &__badge {
-        display: inline-block;
-        padding: 0.25rem 0.5rem;
-        background-color: var(--color-primary);
-        color: white;
-        border-radius: 1rem;
-        font-size: 0.7rem;
-        font-weight: 600;
-
-        &--secondary {
-            background-color: rgb(59, 130, 246);
-        }
-    }
-
-    &__selected-dates {
-        display: flex;
-        gap: 0.25rem;
-        flex-wrap: wrap;
-        margin-top: 0.5rem;
-    }
-
-    &__date-pill {
-        display: inline-block;
-        padding: 0.25rem 0.5rem;
-        background-color: white;
-        border: 1px solid var(--color-border);
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        color: var(--color-text);
-    }
-
-    &__month-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1rem;
-    }
-
-    &__month-nav {
         background: none;
         border: none;
-        width: 1.75rem;
-        height: 1.75rem;
-        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        color: #64748b;
         cursor: pointer;
-        color: var(--color-primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        font-weight: 500;
 
         &:hover {
-            background-color: var(--color-hover);
+            color: #000;
+        }
+    }
+
+    &__calendar-nav {
+        display: flex;
+        gap: 0.5rem;
+
+        button {
+            background: #f1f5f9;
+            border: none;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+                background: #e2e8f0;
+            }
+        }
+    }
+
+    &__months-container {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    &__month-view {
+        flex: 1;
+
+        &.is-desktop-only {
+            @media (max-width: 768px) {
+                display: none !important;
+                /* Esconde el segundo mes en móviles */
+            }
         }
     }
 
     &__month-title {
-        margin: 0;
-        font-size: 0.875rem;
         font-weight: 600;
-        color: var(--color-text);
         text-align: center;
+        font-size: 0.8125rem;
+        text-transform: capitalize;
+        margin-bottom: 0.75rem;
+        color: #0f172a;
     }
 
     &__weekdays {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 0.25rem;
+        text-align: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #94a3b8;
         margin-bottom: 0.5rem;
     }
 
-    &__weekday {
-        text-align: center;
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: var(--color-text-light);
-    }
-
-    &__days {
+    &__days-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 0.25rem;
+        row-gap: 2px;
     }
 
-    /* Días celdas unitarias */
     &__day {
+        background: none;
+        border: none;
+        width: 100%;
         aspect-ratio: 1;
-        border: 1px solid var(--color-border);
-        border-radius: 0.25rem;
-        background-color: var(--color-background);
-        color: var(--color-text);
-        cursor: pointer;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 0;
-        transition: background-color 0.1s ease, color 0.1s ease;
+        cursor: pointer;
+        border-radius: 0.25rem;
+        color: #334155;
+        position: relative;
 
-        // Hover seguro: No rompe los estilos de los extremos seleccionados
-        &:hover:not(&--empty):not(&--start):not(&--end):not(&--selected) {
-            background-color: var(--color-hover);
-            border-color: var(--color-primary);
-            color: var(--color-primary);
+        &:hover:not(:disabled):not(.is-empty) {
+            background-color: #f1f5f9;
         }
 
-        &--empty {
-            background-color: transparent;
-            border: none;
+        &.is-empty {
             cursor: default;
+            pointer-events: none;
         }
 
-        /* Rango visual transitorio en Hover */
-        &--hovered:not(&--empty):not(&--start):not(&--end) {
-            background-color: var(--color-selected);
-            color: var(--color-primary);
-            border-color: var(--color-primary-light);
+        &.is-within-range {
+            background-color: rgb(243, 232, 255);
+            color: rgb(147, 51, 234);
             border-radius: 0;
         }
 
-        &--selected {
-            background-color: var(--color-selected);
-            color: var(--color-primary);
-            border-color: var(--color-primary);
+        &.is-hover-range {
+            background-color: rgb(248, 242, 255);
+            color: rgb(168, 85, 247);
+            border-radius: 0;
         }
 
-        /* Protección del fondo de los límites elegidos */
-        &--start,
-        &--end {
-            background-color: var(--color-primary) !important;
-            color: white !important;
-            border-color: var(--color-primary) !important;
-            font-weight: 700;
-            opacity: 1 !important;
+        &.is-start {
+            background-color: rgb(147, 51, 234) !important;
+            color: #ffffff !important;
+            border-top-left-radius: 0.25rem;
+            border-bottom-left-radius: 0.25rem;
+            font-weight: bold;
         }
 
-        &--start {
-            border-radius: 0.25rem 0 0 0.25rem;
-        }
-
-        &--end {
-            border-radius: 0 0.25rem 0.25rem 0;
+        &.is-end {
+            background-color: rgb(147, 51, 234) !important;
+            color: #ffffff !important;
+            border-top-right-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+            font-weight: bold;
         }
     }
 
-    &__calendar-footer {
+    &__footer {
         display: flex;
-        gap: 0.5rem;
-        padding: 0.75rem 1rem;
-        background-color: var(--color-hover);
-        border-top: 1px solid var(--color-border);
-        justify-content: flex-end;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #e2e8f0;
     }
 
-    &__btn-primary,
-    &__btn-secondary {
-        padding: 0.5rem 1rem;
-        border-radius: 0.25rem;
-        font-size: 0.8125rem;
+    &__clear-btn {
+        background: none;
+        border: none;
+        color: #dc2626;
+        font-size: 0.75rem;
+        cursor: pointer;
+        font-weight: 500;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &__apply-btn {
+        background-color: rgb(147, 51, 234);
+        color: white;
+        border: none;
+        padding: 0.45rem 1rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
         font-weight: 600;
         cursor: pointer;
-        border: none;
+        transition: background 0.1s;
+
+        &:hover:not(:disabled) {
+            background-color: rgb(126, 34, 206);
+        }
 
         &:disabled {
-            opacity: 0.5;
+            background-color: #cbd5e1;
+            color: #94a3b8;
             cursor: not-allowed;
         }
-    }
-
-    &__btn-primary {
-        background-color: var(--color-primary);
-        color: white;
-    }
-
-    &__btn-secondary {
-        background-color: var(--color-border);
-        color: var(--color-text);
-    }
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
     }
 }
