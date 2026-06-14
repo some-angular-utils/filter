@@ -143,18 +143,29 @@
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         padding: 1.25rem;
         width: 540px;
+        max-width: calc(100vw - 2rem);
         display: flex;
         flex-direction: column;
         gap: 1rem;
         cursor: default;
         box-sizing: border-box;
 
+        @media (min-width: 769px) {
+            .sau-filter__item:nth-last-child(-n+2) & {
+                left: auto;
+                right: 0;
+            }
+        }
+
         @media (max-width: 768px) {
-            width: calc(100vw - 2rem);
+            width: calc(100vw - 1.5rem);
             max-width: 340px;
+            position: fixed;
+            top: 50%;
             left: 50%;
-            /* Centrado en pantallas móviles */
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.4);
         }
     }
 
