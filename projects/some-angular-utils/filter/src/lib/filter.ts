@@ -39,6 +39,10 @@ export class SAUFilterModule {
     private elementRef: ElementRef
   ) { }
 
+  private get orderKey(): string {
+    return this.filterConfig?.orderParamName || 'order';
+  }
+
   ngOnInit() {
     if (this.filterConfig?.mobile) {
       this.arrayMobile = this.filterConfig.mobile;
@@ -96,7 +100,7 @@ export class SAUFilterModule {
 
     // 1. Inicializar los controles de ordenación si existen campos declarados
     if (this.hasOrderFields()) {
-      const urlOrderParam = urlParams.get('order');
+      const urlOrderParam = urlParams.get(this.orderKey);
       // Convertir el string de la URL (ej: "title,-created_at") en un array para comprobar los estados
       const activeOrders = urlOrderParam ? urlOrderParam.split(',') : [];
 
@@ -168,7 +172,7 @@ export class SAUFilterModule {
       });
 
       if (orderSegments.length > 0) {
-        jsonResult['order'] = orderSegments.join(','); // Resultado combinado: "title,-created_at"
+        jsonResult[this.orderKey] = orderSegments.join(','); // Asigna la clave configurada
       }
     }
 
