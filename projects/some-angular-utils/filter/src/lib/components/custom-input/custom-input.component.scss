@@ -6,6 +6,7 @@
     letter-spacing: -0.025em;
     width: 100%;
     position: relative;
+    cursor: pointer;
 
     &__label {
         font-weight: bold;
@@ -48,13 +49,16 @@
         }
     }
 
-    /* --- ARQUITECTURA DEL SLIDE TRI-STATE COMPACTO --- */
+    /* ==========================================================================
+       ARQUITECTURA DEL SLIDE TRI-STATE COMPACTO (FILTROS ESTÁNDAR)
+       ========================================================================== */
     &__slider-container {
         display: flex;
         align-items: center;
         gap: 0.65rem;
         min-height: 38px;
         box-sizing: border-box;
+        width: 9rem;
     }
 
     &__slider-track {
@@ -68,14 +72,15 @@
         border: 1px solid #cbd5e1;
         box-sizing: border-box;
 
-        &.is-false {
-            background-color: #fca5a5;
-            border-color: #f87171;
-        }
-
         &.is-unspecified {
             background-color: #e2e8f0;
             border-color: #cbd5e1;
+        }
+
+        /* Color rojo original para cuando algo está inactivo/falso */
+        &.is-false {
+            background-color: #fca5a5;
+            border-color: #f87171;
         }
 
         &.is-true {
@@ -101,18 +106,17 @@
         .is-false & {
             transform: translateX(0px);
             color: #dc2626;
+            /* Icono equis en rojo */
         }
 
         .is-unspecified & {
             transform: translateX(16px);
-            /* Centro exacto */
             color: #64748b;
         }
 
         .is-true & {
             transform: translateX(32px);
             color: rgb(147, 51, 234);
-            background-color: rgb(147, 51, 234);
         }
     }
 
@@ -120,10 +124,6 @@
         font-size: 0.6rem;
         font-weight: bold;
         user-select: none;
-
-        .is-true & {
-            color: #ffffff;
-        }
     }
 
     &__slider-status-text {

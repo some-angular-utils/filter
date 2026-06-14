@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 
@@ -22,45 +22,52 @@ import { DateRangeInputComponent } from './components/date-range-input/date-rang
 export class SAUFilterModule {
 
   @Input() filterConfig: any;
-  @Input() searchButtonText = 'Buscar'
-  // Emite un objeto con la estructura JSON limpia y el String de la URL armada
+  @Input() searchButtonText = 'Buscar';
   @Output() onFilterProcessed = new EventEmitter<{ json: any, url: string }>();
 
   public filterForm = new FormGroup<any>({});
   public dropdowns: any = {};
   public arrayMobile: string[] = [];
 
+  public showOrderDropdown = false;
+
+  // Nuevo FormGroup para aislar y encapsular todas las columnas de ordenación
+  public sortOrderGroup = new FormGroup<any>({});
+
   constructor(
     private datePipe: DatePipe,
+    private elementRef: ElementRef
   ) { }
 
   ngOnInit() {
-
     if (this.filterConfig?.mobile) {
       this.arrayMobile = this.filterConfig.mobile;
     }
     this.buildFormStructure();
   }
 
-  /**
-   * Función interna que reemplaza al antiguo Utils externo.
-   * Convierte cadenas numéricas en números reales y limpia textos.
-   */
+  @HostListener('document:click', ['$event'])
+  clickOutside(event: MouseEvent) {
+    if (!this.elementRef.nativeElement.contains(event.target)) {
+      this.showOrderDropdown = false;
+    }
+  }
+
+  toggleOrderDropdown(event: MouseEvent) {
+    event.stopPropagation();
+    if (this.hasOrderFields()) {
+      this.showOrderDropdown = !this.showOrderDropdown;
+    }
+  }
+
+  public hasOrderFields(): boolean {
+    return !!(this.filterConfig?.orderByFields && this.filterConfig.orderByFields.length > 0);
+  }
+
   private convertToNumberFilter(value: any): any {
-    // 1. Si es estrictamente nulo o indefinido, o un string vacío real
-    if (value === null || value === undefined || value === '') {
-      return '';
-    }
-
-    // 2. Si ya es un booleano (para los checkboxes por defecto), devuélvelo tal cual
-    if (typeof value === 'boolean') {
-      return value;
-    }
-
-    // 3. Si ya es un número, devuélvelo tal cual
-    if (typeof value === 'number') {
-      return value;
-    }
+    if (value === null || value === undefined || value === '') return '';
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'number') return value;
 
     const stringValue = value.toString().trim();
 
@@ -87,6 +94,25 @@ export class SAUFilterModule {
     const urlParams = new URLSearchParams(window.location.search);
     const formConfig = this.filterConfig.form;
 
+    // 1. Inicializar los controles de ordenación si existen campos declarados
+    if (this.hasOrderFields()) {
+      const urlOrderParam = urlParams.get('order');
+      // Convertir el string de la URL (ej: "title,-created_at") en un array para comprobar los estados
+      const activeOrders = urlOrderParam ? urlOrderParam.split(',') : [];
+
+      this.filterConfig.orderByFields.forEach((option: { field: string, label: string }) => {
+        let defaultSortValue: boolean | undefined = undefined;
+
+        const matchingUrlValue = activeOrders.find(o => o === option.field || o === `-${option.field}`);
+
+        if (matchingUrlValue) {
+          defaultSortValue = !matchingUrlValue.startsWith('-');
+        }
+
+        this.sortOrderGroup.addControl(option.field, new FormControl<boolean | undefined>(defaultSortValue));
+      });
+    }
+
     Object.keys(formConfig).forEach(nameFilter => {
       const config = formConfig[nameFilter];
 
@@ -110,9 +136,7 @@ export class SAUFilterModule {
             // Caso URL real: Viene como String '10,20'
             defaultValue = rawValue.split(',').map(e => this.convertToNumberFilter(e.trim()));
           }
-        }
-        // 3. Caso para controles individuales (inputText, selectSimple, etc.)
-        else {
+        } else {
           defaultValue = this.convertToNumberFilter(rawValue);
         }
       }
@@ -130,6 +154,24 @@ export class SAUFilterModule {
     const jsonResult: any = {};
     const formConfig = this.filterConfig.form;
 
+    // 2. Procesar los múltiples valores de ordenación activos
+    if (this.hasOrderFields()) {
+      const orderSegments: string[] = [];
+
+      Object.keys(this.sortOrderGroup.controls).forEach(fieldKey => {
+        const value = this.sortOrderGroup.get(fieldKey)?.value;
+        if (value === true) {
+          orderSegments.push(fieldKey);       // Ascendente: "title"
+        } else if (value === false) {
+          orderSegments.push(`-${fieldKey}`);  // Descendente: "-title"
+        }
+      });
+
+      if (orderSegments.length > 0) {
+        jsonResult['order'] = orderSegments.join(','); // Resultado combinado: "title,-created_at"
+      }
+    }
+
     Object.keys(formConfig).forEach(nameField => {
       const configField = formConfig[nameField];
       const key = configField.key;
@@ -139,8 +181,8 @@ export class SAUFilterModule {
 
       let value = control.value;
 
-      // 1. Tratamiento para Checkbox
-      if (configField.type === 'inputCheckbox' && value != undefined) {
+      if (configField.type === 'inputCheckbox' && value !== undefined) {
+        if (value === undefined || value === null) return;
         jsonResult[key] = value ? true : false;
         return;
       }
@@ -173,6 +215,7 @@ export class SAUFilterModule {
 
     // Generar la Query String final
     const urlString = this.buildQueryString(jsonResult);
+    this.showOrderDropdown = false;
 
     // Emitir ambos formatos listos al componente padre
     this.onFilterProcessed.emit({
@@ -197,11 +240,7 @@ export class SAUFilterModule {
     return pairs.length > 0 ? `?${pairs.join('&')}` : '';
   }
 
-  // --- Helpers de UI y Mobile ---
-  public onChangeSelect() {
-    // Si prefieres procesamiento instantáneo al cambiar un select, descomenta la siguiente línea:
-    // this.processFilter();
-  }
+  public onChangeSelect() { }
 
   public showMoreFilter(show: boolean) {
     this.arrayMobile = show ? [] : (this.filterConfig.mobile || []);

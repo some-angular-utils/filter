@@ -12,6 +12,16 @@ export class CustomInputComponent {
   @Input() placeholder = '';
   @Input() type = 'text';
 
+  // Textos de estado
+  @Input() trueLabel = 'Activo';
+  @Input() falseLabel = 'Inactivo';
+  @Input() nullLabel = 'Sin especificar';
+
+  // Nuevos inputs para personalizar los iconos del tirador (por defecto los de checkbox)
+  @Input() trueIcon = '✓';
+  @Input() falseIcon = '✕';
+  @Input() nullIcon = '•';
+
   private _formControlItem!: AbstractControl;
   inputControl!: FormControl;
 

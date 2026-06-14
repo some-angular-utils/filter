@@ -1,5 +1,5 @@
-@if(formControlItem){
-<div class="sau-input" [class.sau-input--slide-tri-state]="type === 'checkbox'">
+@if (formControlItem) {
+<div class="sau-input" [class.sau-input--slide-tri-state]="type === 'checkbox'" (click)="toggleTriState($event)">
 
     @if (type !== 'checkbox') {
     <label class="sau-input__label">
@@ -13,28 +13,32 @@
         <div class="sau-input__slider-container">
             <div class="sau-input__slider-track" [class.is-true]="inputControl.value === true"
                 [class.is-false]="inputControl.value === false"
-                [class.is-unspecified]="inputControl.value === null || inputControl.value === undefined"
-                (click)="toggleTriState($event)">
+                [class.is-unspecified]="inputControl.value === null || inputControl.value === undefined">
 
                 <div class="sau-input__slider-handle">
-                    @if (inputControl.value === true) { <span class="sau-input__handle-icon">✓</span> }
-                    @if (inputControl.value === false) { <span class="sau-input__handle-icon">✕</span> }
-                    @if (inputControl.value === null || inputControl.value === undefined) { <span
-                        class="sau-input__handle-icon">-</span> }
+                    @if (inputControl.value === true) {
+                    <span class="sau-input__handle-icon">{{ trueIcon }}</span>
+                    }
+                    @if (inputControl.value === false) {
+                    <span class="sau-input__handle-icon">{{ falseIcon }}</span>
+                    }
+                    @if (inputControl.value === null || inputControl.value === undefined) {
+                    <span class="sau-input__handle-icon">{{ nullIcon }}</span>
+                    }
                 </div>
             </div>
 
             <span class="sau-input__slider-status-text">
-                @if (inputControl.value === true) { Activo }
-                @if (inputControl.value === false) { Inactivo }
-                @if (inputControl.value === null || inputControl.value === undefined) { Sin especificar }
+                @if (inputControl.value === true) { {{ trueLabel }} }
+                @if (inputControl.value === false) { {{ falseLabel }} }
+                @if (inputControl.value === null || inputControl.value === undefined) { {{ nullLabel }} }
             </span>
         </div>
     </div>
     }
 
-    @if(formControlItem.invalid && (formControlItem.touched || formControlItem.dirty)){
-    <div class="sau-input__error">
+    @if (formControlItem.invalid && (formControlItem.touched || formControlItem.dirty)) {
+    <div class="sau-filter__error">
         Campo obligatorio
     </div>
     }

@@ -40,6 +40,7 @@ export default meta;
 type Story = StoryObj<SAUFilterModule>;
 
 const defaultFilterConfig = {
+    orderByField: 'title', // <- Habilita el filtro de ordenación por el campo 'title'
     order: ['buscar', 'estado', 'categorias', 'activo'],
     mobile: ['buscar', 'estado'],
     form: {
@@ -81,8 +82,35 @@ const defaultFilterConfig = {
 
 export const Interactive: Story = {
     args: {
-        searchButtonText: 'Search',
-        filterConfig: defaultFilterConfig
+        searchButtonText: 'Buscar',
+        filterConfig: {
+            // Pasamos varios criterios de ordenación con sus labels legibles
+            orderByFields: [
+                { field: 'title', label: 'Título' },
+                { field: 'created_at', label: 'Fecha de Creación' },
+                { field: 'total', label: 'Importe Total' }
+            ],
+            order: ['buscar', 'estado'],
+            mobile: ['buscar'],
+            form: {
+                buscar: {
+                    name: 'Buscar',
+                    key: 'search',
+                    type: 'inputText',
+                    defaultValue: ''
+                },
+                estado: {
+                    name: 'Estado',
+                    key: 'status_id',
+                    type: 'selectSimple',
+                    dropdowns: [
+                        { id: 1, name: 'Activo' },
+                        { id: 2, name: 'Inactivo' }
+                    ],
+                    defaultValue: ''
+                }
+            }
+        }
     },
     render: (args) => {
         const [{ filterConfig }, updateArgs] = useArgs();
@@ -94,6 +122,7 @@ export const Interactive: Story = {
                     if (args['onFilterProcessed']) {
                         args['onFilterProcessed'](event);
                     }
+                    console.log('Filtros procesados:', event);
                 }
             }
         };
@@ -103,6 +132,7 @@ export const Interactive: Story = {
 export const SimpleSearch: Story = {
     args: {
         searchButtonText: 'Buscar',
+        // Al no llevar 'orderByField', este renderizará el botón de búsqueda simple original sin desplegable
         filterConfig: {
             order: ['search'],
             mobile: ['search'],
@@ -221,6 +251,7 @@ export const CustomerFilter: Story = {
     args: {
         searchButtonText: 'Filtrar',
         filterConfig: {
+            orderByField: 'name', // <- Habilita la ordenación por nombre del cliente (order=name o order=-name)
             order: ['nombre', 'empresa', 'estado', 'activo'],
             mobile: ['nombre', 'estado'],
             form: {
@@ -427,6 +458,7 @@ export const CompleteFilter: Story = {
     args: {
         searchButtonText: 'Buscar Reportes',
         filterConfig: {
+            orderByField: 'created_at', // <- Habilita la ordenación por fecha de creación (order=created_at o order=-created_at)
             order: ['search', 'date_field', 'date_range', 'category', 'status'],
             mobile: ['search', 'date_field', 'date_range'],
             form: {
