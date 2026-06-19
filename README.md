@@ -10,35 +10,78 @@
 
 ---
 
-[DEMO](https://some-angular-utils.github.io/filter)
-
 [NPM](https://www.npmjs.com/package/@some-angular-utils/filter)
 
 ---
 
+## DEMO
+
+This repo ships with an interactive showcase app — every field type has a live, editable example (edit the code, the filter bar updates in real time). Run it locally:
+
+```bash
+npm install
+npm run dev
+```
+
+Then open http://localhost:4200.
+
 ## IMPORT
 ```ts
-import { SAUfilterModule } from '@some-angular-utils/filter';
+import { SAUFilterModule } from '@some-angular-utils/filter';
+```
+
+## TYPESCRIPT
+```ts
+public filterConfig = {
+    order: ['search', 'status'],
+    mobile: ['search'],
+    form: {
+        search: {
+            name: 'Buscar',
+            key: 'q',
+            type: 'inputText',
+            defaultValue: ''
+        },
+        status: {
+            name: 'Estado',
+            key: 'status_id',
+            type: 'selectSimple',
+            dropdowns: [
+                { id: 1, name: 'Activo' },
+                { id: 2, name: 'Inactivo' }
+            ],
+            defaultValue: ''
+        }
+    }
+};
+
+onFilterProcessed(event: { json: any, url: string }) {
+    // event.url is a ready-to-use query string: "?q=foo&status_id=1"
+}
 ```
 
 ## HTML
 ```ts
 <sau-filter
-    [totalPages]="totalPages"
-    [currentPage]="currentPage"
-    (pageChange)="onPageChange($event)"
+    [filterConfig]="filterConfig"
+    searchButtonText="Buscar"
+    (onFilterProcessed)="onFilterProcessed($event)"
 ></sau-filter>
 ```
+
+## FIELD TYPES
+
+`inputText` · `inputNumber` · `inputCheckbox` (tri-state: true / false / unset) · `date` · `dateRange` (needs `keyTo`) · `selectSimple` · `selectMultiple` (both accept `dropdowns: [{ id, name }]`, optionally `bindSubLabel`)
+
+## SORT ORDER
+
+Add `orderParamName` and `orderByFields: [{ field, label }]` to `filterConfig` to get a built-in ascending/descending sort dropdown next to the search button.
 
 ## COLORS
 
 ```css
 .sau-filter{
     --sau-color-primary: rgb(147, 51, 234);
-    --sau-color-secondary: var(--sau-color-primary);
     --sau-color-background: rgb(255, 255, 255);
-    --sau-color-edit: rgb(34, 197, 94);
-    --sau-color-delete: rgb(239, 68, 68);
-    --sau-color-text: rgb(31, 41, 55);
 }
 ```
