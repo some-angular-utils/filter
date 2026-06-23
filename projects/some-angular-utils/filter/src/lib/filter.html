@@ -6,9 +6,18 @@
             <!-- Date Range Input -->
             @if (filterConfig.form[nameField]?.type === 'dateRange' && checkMobile(nameField)) {
             <div class="sau-filter__item">
-                <date-range-input [label]="filterConfig.form[nameField].name"
+
+                @if(filterConfig.form[nameField].dateRangeOptions){
+                <sau-date-range-picker [label]="filterConfig.form[nameField].name"
+                    [formControlItem]="filterForm.controls[nameField]"
+                    [dateRangeOptions]="filterConfig.form[nameField].dateRangeOptions">
+                </sau-date-range-picker>
+                } @else {
+                <sau-date-range-picker [label]="filterConfig.form[nameField].name"
                     [formControlItem]="filterForm.controls[nameField]">
-                </date-range-input>
+                </sau-date-range-picker>
+                }
+
             </div>
             }
 

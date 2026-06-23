@@ -4,7 +4,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 
 import { CustomInputComponent } from './components/custom-input/custom-input.component';
 import { CustomSelectComponent } from './components/custom-select/custom-select.component';
-import { DateRangeInputComponent } from './components/date-range-input/date-range-input.component';
+import { SAUDateRangePickerModule } from '@some-angular-utils/date-range-picker';
 
 @Component({
   selector: 'sau-filter',
@@ -16,7 +16,7 @@ import { DateRangeInputComponent } from './components/date-range-input/date-rang
     ReactiveFormsModule,
     CustomInputComponent,
     CustomSelectComponent,
-    DateRangeInputComponent
+    SAUDateRangePickerModule,
   ]
 })
 export class SAUFilterModule {

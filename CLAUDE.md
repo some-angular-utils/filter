@@ -37,12 +37,27 @@ selector/
     └── src/
         ├── public-api.ts                  # exports públicos del paquete npm
         └── lib/
-            ├── filter.ts / filter.html / filter.scss   # componente principal <sau-filter>
-            └── components/
-                ├── custom-input/             # input de texto/número/fecha + checkbox tri-estado
-                ├── custom-select/             # select simple/múltiple con búsqueda y sub-label
-                └── date-range-input/          # selector de rango de fechas con presets (hoy, mes actual...)
+            └── filter.ts / filter.html / filter.scss   # componente principal <sau-filter>
 ```
+
+`<sau-filter>` ya no contiene sus subcomponentes (`custom-input`/`custom-select`/`date-range-input`) en este repo — ahora son tres paquetes hermanos independientes, cada uno con su propio workspace Angular, que `filter` consume como dependencias normales:
+
+- `sau-date-range-picker` → paquete `@some-angular-utils/date-range-picker`, repo `C:\Users\ADMINISTRATOR\Desktop\date-input`, **ya publicado en npm** (se instala normal, sin trucos).
+- `sau-select` → paquete `@some-angular-utils/select`, repo `C:\Users\ADMINISTRATOR\Desktop\sau-select`.
+- `sau-input` → paquete `@some-angular-utils/input`, repo `C:\Users\ADMINISTRATOR\Desktop\sau-input`.
+
+Mientras `select` e `input` no estén publicados en npm, `projects/some-angular-utils/filter/package.json` los referencia vía `file:` apuntando a un **`.tgz`** generado con `npm pack` dentro del `dist/` de cada repo hermano (no a la carpeta del `dist/` directamente). Un `file:` a una carpeta crea un symlink/junction que arrastra el `node_modules` propio de ese repo hermano consigo; como ese `node_modules` trae su propia copia de `@angular/forms`, TypeScript la trata como un tipo distinto de la copia de `selector`, y `strictTemplates` rompe con errores como "Types have separate declarations of a private property '_parent'". Un `.tgz` en cambio se extrae como copia real sin `node_modules` propio, igual que haría un `npm install` desde el registro real. Flujo para recoger un cambio en `sau-select`/`sau-input`:
+
+```bash
+# en el repo hermano (p.ej. sau-select)
+npm run build:lib && cd dist/some-angular-utils/select && npm pack
+
+# de vuelta en selector
+npm install   # vuelve a extraer el .tgz actualizado
+npm run build:lib
+```
+
+El nombre del `.tgz` incluye la versión (`some-angular-utils-select-0.0.1.tgz`); si subes la versión en el `package.json` del repo hermano, actualiza también la ruta `file:` en `filter/package.json`. ng-packagr además exige declarar estos paquetes en `allowedNonPeerDependencies` dentro de `ng-package.json` de `filter` (igual que ya estaba hecho para `date-range-picker`) o falla el build con "must be explicitly allowed".
 
 ## El orden de build importa
 
@@ -78,7 +93,7 @@ El README original tenía un ejemplo de HTML copiado por error de otra librería
 
 ## El texto en español dentro de la librería es intencional, no un bug
 
-El popover de orden ("Criterios de Ordenación", "Sin ordenar") y los labels por defecto de `custom-input.component.ts` (`Activo`/`Inactivo`/`Sin especificar`) están hardcodeados en español dentro de la librería misma. No es algo que se pueda cambiar desde `filterConfig` ni desde la app showcase — es el comportamiento real del componente. No "corregir" esto en las demos para que parezca todo en inglés; mostrarlo tal cual es lo correcto.
+El popover de orden ("Criterios de Ordenación", "Sin ordenar") y los labels por defecto del paquete hermano `@some-angular-utils/input` (`Activo`/`Inactivo`/`Sin especificar`, en `sau-input/projects/some-angular-utils/input/src/lib/input.component.ts`) están hardcodeados en español. No es algo que se pueda cambiar desde `filterConfig` ni desde la app showcase — es el comportamiento real del componente. No "corregir" esto en las demos para que parezca todo en inglés; mostrarlo tal cual es lo correcto.
 
 ## Convenciones de este repo (`.github/copilot-instructions.md`)
 
