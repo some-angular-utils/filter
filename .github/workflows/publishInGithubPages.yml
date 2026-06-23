@@ -19,9 +19,9 @@ jobs:
           bun-version: latest
 
       - name: Install dependencies
-        run: bun install
+        run: bun run install:lib && bun install
 
-      - name: Build Storybook
+      - name: Build demo
         run: bun run build:lib && bun run build
 
       - name: Deploy
