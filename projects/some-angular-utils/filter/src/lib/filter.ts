@@ -1,10 +1,11 @@
-import { Component, Input, Output, EventEmitter, HostListener, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 
 import { CustomInputComponent } from './components/custom-input/custom-input.component';
 import { CustomSelectComponent } from './components/custom-select/custom-select.component';
 import { SAUDateRangePickerModule } from '@some-angular-utils/date-range-picker';
+import { FilterButtonComponent } from './components/filter-button/filter-button.component';
 
 @Component({
   selector: 'sau-filter',
@@ -17,6 +18,7 @@ import { SAUDateRangePickerModule } from '@some-angular-utils/date-range-picker'
     CustomInputComponent,
     CustomSelectComponent,
     SAUDateRangePickerModule,
+    FilterButtonComponent,
   ]
 })
 export class SAUFilterModule {
@@ -29,15 +31,10 @@ export class SAUFilterModule {
   public dropdowns: any = {};
   public arrayMobile: string[] = [];
 
-  public showOrderDropdown = false;
-
-  // Nuevo FormGroup para aislar y encapsular todas las columnas de ordenación
+  // FormGroup para aislar y encapsular todas las columnas de ordenación
   public sortOrderGroup = new FormGroup<any>({});
 
-  constructor(
-    private datePipe: DatePipe,
-    private elementRef: ElementRef
-  ) { }
+  constructor(private datePipe: DatePipe) { }
 
   private get orderKey(): string {
     return this.filterConfig?.orderParamName || 'order';
@@ -48,20 +45,6 @@ export class SAUFilterModule {
       this.arrayMobile = this.filterConfig.mobile;
     }
     this.buildFormStructure();
-  }
-
-  @HostListener('document:click', ['$event'])
-  clickOutside(event: MouseEvent) {
-    if (!this.elementRef.nativeElement.contains(event.target)) {
-      this.showOrderDropdown = false;
-    }
-  }
-
-  toggleOrderDropdown(event: MouseEvent) {
-    event.stopPropagation();
-    if (this.hasOrderFields()) {
-      this.showOrderDropdown = !this.showOrderDropdown;
-    }
   }
 
   public hasOrderFields(): boolean {
@@ -220,7 +203,6 @@ export class SAUFilterModule {
 
     // Generar la Query String final
     const urlString = this.buildQueryString(jsonResult);
-    this.showOrderDropdown = false;
 
     // Emitir ambos formatos listos al componente padre
     this.onFilterProcessed.emit({
