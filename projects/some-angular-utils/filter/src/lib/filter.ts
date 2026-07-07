@@ -104,8 +104,9 @@ export class SAUFilterModule {
       // Convertir el string de la URL (ej: "title,-created_at") en un array para comprobar los estados
       const activeOrders = urlOrderParam ? urlOrderParam.split(',') : [];
 
-      this.filterConfig.orderByFields.forEach((option: { field: string, label: string }) => {
-        let defaultSortValue: boolean | undefined = undefined;
+      this.filterConfig.orderByFields.forEach((option: { field: string, label: string, defaultValue?: boolean }) => {
+        // URL params take priority; fall back to option.defaultValue
+        let defaultSortValue: boolean | undefined = option.defaultValue ?? undefined;
 
         const matchingUrlValue = activeOrders.find(o => o === option.field || o === `-${option.field}`);
 

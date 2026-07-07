@@ -3,7 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { SAUFilterModule } from '@some-angular-utils/filter';
 import { CodeEditorComponent } from '../code-editor/code-editor';
 
-type DemoId = 'search' | 'selects' | 'numbers' | 'dates' | 'sort' | 'theme';
+type DemoId = 'search' | 'selects' | 'numbers' | 'dates' | 'sort' | 'sortDefaults' | 'theme';
 type DemoKind = 'js' | 'css';
 
 interface DemoEntry {
@@ -135,6 +135,33 @@ const SORT_CODE = `{
   },
 }`;
 
+const SORT_DEFAULTS_CODE = `{
+  searchButtonText: 'Search',
+  filterConfig: {
+    orderParamName: 'sort',
+    orderByFields: [
+      { field: 'title',      label: 'Title',        defaultValue: true },
+      { field: 'created_at', label: 'Created date',  defaultValue: false },
+      { field: 'total',      label: 'Total amount' },
+    ],
+    order: ['status'],
+    mobile: ['status'],
+    form: {
+      status: {
+        name: 'Status',
+        key: 'status',
+        type: 'selectSimple',
+        dropdowns: [
+          { id: 'active',   name: 'Active' },
+          { id: 'draft',    name: 'Draft' },
+          { id: 'archived', name: 'Archived' },
+        ],
+        defaultValue: '',
+      },
+    },
+  },
+}`;
+
 const THEME_CODE = `--sau-color-primary: rgb(35, 163, 31);
 --sau-color-background: rgb(255, 255, 255);`;
 
@@ -159,6 +186,7 @@ export class DemosComponent implements OnDestroy {
     createDemo('numbers', 'Numbers & checkbox', 'Numeric range fields plus a tri-state checkbox (true / false / unset).', 'js', NUMBERS_CODE),
     createDemo('dates', 'Dates & ranges', 'A single date picker and a date-range field with quick presets (today, this month...).', 'js', DATES_CODE),
     createDemo('sort', 'Sort order', 'Add orderByFields to get a built-in ascending/descending sort dropdown next to the button.', 'js', SORT_CODE),
+    createDemo('sortDefaults', 'Sort defaults', 'Use defaultValue: true (asc) or false (desc) on each orderByField to pre-populate the sort state on load.', 'js', SORT_DEFAULTS_CODE),
     createDemo('theme', 'Theming', 'Every color is a CSS custom property. Edit the values below and watch it restyle instantly.', 'css', THEME_CODE),
   ];
 
