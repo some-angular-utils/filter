@@ -3,7 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { SAUFilterModule } from '@some-angular-utils/filter';
 import { CodeEditorComponent } from '../code-editor/code-editor';
 
-type DemoId = 'search' | 'selects' | 'numbers' | 'dates' | 'sort' | 'sortDefaults' | 'theme';
+type DemoId = 'search' | 'selects' | 'numbers' | 'dates' | 'sort' | 'sortDefaults' | 'kitchen' | 'theme';
 type DemoKind = 'js' | 'css';
 
 interface DemoEntry {
@@ -162,6 +162,47 @@ const SORT_DEFAULTS_CODE = `{
   },
 }`;
 
+const KITCHEN_CODE = `{
+  searchButtonText: 'Find jobs',
+  filterConfig: {
+    orderParamName: 'sort',
+    orderByFields: [
+      { field: 'salary',    label: 'Salary',       defaultValue: false },
+      { field: 'posted_at', label: 'Posted date',   defaultValue: true },
+      { field: 'relevance', label: 'Relevance' },
+    ],
+    order: ['query', 'department', 'skills', 'minSalary', 'remote', 'posted', 'period'],
+    mobile: ['query'],
+    form: {
+      query:      { name: 'Search',              key: 'q',             type: 'inputText',      defaultValue: '' },
+      department: {
+        name: 'Department', key: 'dept', type: 'selectSimple',
+        dropdowns: [
+          { id: 'eng',    name: 'Engineering' },
+          { id: 'design', name: 'Design' },
+          { id: 'product',name: 'Product' },
+          { id: 'ops',    name: 'Operations' },
+        ],
+        defaultValue: 'eng',
+      },
+      skills: {
+        name: 'Skills', key: 'skills', type: 'selectMultiple',
+        dropdowns: [
+          { id: 1, name: 'Angular' },
+          { id: 2, name: 'React' },
+          { id: 3, name: 'Node.js' },
+          { id: 4, name: 'Python' },
+        ],
+        defaultValue: [1, 3],
+      },
+      minSalary: { name: 'Min. salary (€)', key: 'salary_min', type: 'inputNumber',   defaultValue: 40000 },
+      remote:    { name: 'Remote only',     key: 'remote',     type: 'inputCheckbox', defaultValue: true },
+      posted:    { name: 'Posted after',    key: 'posted_after',type: 'date',         defaultValue: '' },
+      period:    { name: 'Contract period', key: 'contract_from', keyTo: 'contract_to', type: 'dateRange', defaultValue: [] },
+    },
+  },
+}`;
+
 const THEME_CODE = `--sau-color-primary: rgb(35, 163, 31);
 --sau-color-background: rgb(255, 255, 255);`;
 
@@ -175,6 +216,7 @@ export class DemosComponent implements OnDestroy {
   private renderer = inject(Renderer2);
   private document = inject(DOCUMENT);
   private themeStyleEl = this.renderer.createElement('style') as HTMLStyleElement;
+  private kitchenStyleEl = this.renderer.createElement('style') as HTMLStyleElement;
 
   activeTab = signal<DemoId>('search');
   resultJson = signal<string | null>(null);
@@ -187,11 +229,16 @@ export class DemosComponent implements OnDestroy {
     createDemo('dates', 'Dates & ranges', 'A single date picker and a date-range field with quick presets (today, this month...).', 'js', DATES_CODE),
     createDemo('sort', 'Sort order', 'Add orderByFields to get a built-in ascending/descending sort dropdown next to the button.', 'js', SORT_CODE),
     createDemo('sortDefaults', 'Sort defaults', 'Use defaultValue: true (asc) or false (desc) on each orderByField to pre-populate the sort state on load.', 'js', SORT_DEFAULTS_CODE),
+    createDemo('kitchen', 'Kitchen sink', 'All field types, sort with defaults, and a custom brand color — everything at once.', 'js', KITCHEN_CODE),
     createDemo('theme', 'Theming', 'Every color is a CSS custom property. Edit the values below and watch it restyle instantly.', 'css', THEME_CODE),
   ];
 
   constructor() {
     this.renderer.appendChild(this.document.head, this.themeStyleEl);
+    this.renderer.setProperty(this.kitchenStyleEl, 'textContent',
+      `.kitchen-live .sau-filter { --sau-color-primary: rgb(14, 165, 233) !important; }`
+    );
+    this.renderer.appendChild(this.document.head, this.kitchenStyleEl);
 
     for (const demo of this.demos) {
       let timer: ReturnType<typeof setTimeout> | undefined;
@@ -221,6 +268,7 @@ export class DemosComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.renderer.removeChild(this.document.head, this.themeStyleEl);
+    this.renderer.removeChild(this.document.head, this.kitchenStyleEl);
   }
 
   selectTab(id: DemoId) {

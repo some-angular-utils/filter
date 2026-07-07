@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 
@@ -11,6 +11,7 @@ import { FilterButtonComponent } from './components/filter-button/filter-button.
   selector: 'sau-filter',
   templateUrl: './filter.html',
   styleUrls: ['./filter.scss'],
+  encapsulation: ViewEncapsulation.None,
   providers: [DatePipe],
   imports: [
     CommonModule,

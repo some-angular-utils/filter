@@ -1,10 +1,6 @@
 .sau-filter {
-    &__actions-wrapper {
-        position: relative;
-        width: 100%;
-        display: flex;
-        justify-content: flex-end;
-        grid-column: auto;
+    sau-filter-button {
+        display: block;
 
         @media (min-width: 576px) {
             grid-column: 3;
@@ -17,6 +13,13 @@
         @media (min-width: 1200px) {
             grid-column: 6;
         }
+    }
+
+    &__actions-wrapper {
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
     }
 
     &__split-btn {
@@ -53,7 +56,7 @@
     &__btn-arrow {
         background: none;
         border: none;
-        border-left: 1px solid rgba(255, 255, 255, 0.2);
+        border-left: 1px solid color-mix(in srgb, var(--sau-color-background) 20%, transparent);
         padding: 0.65rem 0.75rem;
         cursor: pointer;
         display: flex;
@@ -64,7 +67,7 @@
         svg {
             width: 0.85rem;
             height: 0.85rem;
-            color: white;
+            color: var(--sau-color-background);
             transition: transform 0.2s ease;
 
             &.is-open {
@@ -73,7 +76,7 @@
         }
 
         &:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: color-mix(in srgb, var(--sau-color-background) 10%, transparent);
         }
     }
 
@@ -83,7 +86,7 @@
         right: 0;
         z-index: 60;
         margin-top: 0.5rem;
-        background: #ffffff;
+        background: var(--sau-color-background);
         border: 1px solid #e2e8f0;
         border-radius: 0.75rem;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
@@ -120,32 +123,30 @@
     }
 
     &__order-input {
-        ::ng-deep {
-            .sau-input__label {
-                flex-direction: row !important;
-                align-items: center !important;
-                justify-content: space-between !important;
-                gap: 1rem;
-            }
+        .sau-input__label {
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 1rem !important;
+        }
 
-            .sau-input__title {
-                font-weight: 500;
-                color: #1e293b;
-                font-size: 0.8125rem;
-            }
+        .sau-input__title {
+            font-weight: 500 !important;
+            color: #1e293b !important;
+            font-size: 0.8125rem !important;
+        }
 
-            .sau-input__slider-container {
-                min-height: auto;
-            }
+        .sau-input__slider-container {
+            min-height: auto !important;
+        }
 
-            .sau-input__slider-track.is-false {
-                background-color: rgb(233, 213, 255) !important;
-                border-color: rgb(168, 85, 247) !important;
-            }
+        .sau-input__slider-track.is-false {
+            background-color: color-mix(in srgb, var(--sau-color-primary) 20%, var(--sau-color-background)) !important;
+            border-color: color-mix(in srgb, var(--sau-color-primary) 75%, var(--sau-color-background)) !important;
+        }
 
-            .sau-input__slider-track.is-false .sau-input__slider-handle {
-                color: rgb(147, 51, 234) !important;
-            }
+        .sau-input__slider-track.is-false .sau-input__slider-handle {
+            color: var(--sau-color-primary) !important;
         }
     }
 }

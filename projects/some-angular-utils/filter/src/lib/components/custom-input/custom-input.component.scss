@@ -43,9 +43,9 @@
 
         &:focus {
             outline: none;
-            border-color: rgb(147, 51, 234);
-            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
-            background-color: #ffffff;
+            border-color: var(--sau-color-primary);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--sau-color-primary) 10%, transparent);
+            background-color: var(--sau-color-background);
         }
     }
 
@@ -77,15 +77,14 @@
             border-color: #cbd5e1;
         }
 
-        /* Color rojo original para cuando algo está inactivo/falso */
         &.is-false {
-            background-color: #fca5a5;
-            border-color: #f87171;
+            background-color: color-mix(in srgb, var(--sau-color-error) 50%, var(--sau-color-background));
+            border-color: color-mix(in srgb, var(--sau-color-error) 75%, var(--sau-color-background));
         }
 
         &.is-true {
-            background-color: rgb(233, 213, 255);
-            border-color: rgb(168, 85, 247);
+            background-color: color-mix(in srgb, var(--sau-color-primary) 20%, var(--sau-color-background));
+            border-color: color-mix(in srgb, var(--sau-color-primary) 75%, var(--sau-color-background));
         }
     }
 
@@ -95,7 +94,7 @@
         left: 2px;
         width: 16px;
         height: 16px;
-        background-color: #ffffff;
+        background-color: var(--sau-color-background);
         border-radius: 50%;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
         display: flex;
@@ -105,8 +104,7 @@
 
         .is-false & {
             transform: translateX(0px);
-            color: #dc2626;
-            /* Icono equis en rojo */
+            color: var(--sau-color-error);
         }
 
         .is-unspecified & {
@@ -116,7 +114,7 @@
 
         .is-true & {
             transform: translateX(32px);
-            color: rgb(147, 51, 234);
+            color: var(--sau-color-primary);
         }
     }
 
@@ -133,7 +131,7 @@
     }
 
     &__error {
-        color: #dc2626;
+        color: var(--sau-color-error);
         font-size: 0.75rem;
         margin-top: 0.25rem;
     }
