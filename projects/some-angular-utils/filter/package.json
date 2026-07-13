@@ -1,6 +1,6 @@
 {
   "name": "@some-angular-utils/filter",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Angular filter utility library",
   "author": {
     "name": "jose de los santos",
