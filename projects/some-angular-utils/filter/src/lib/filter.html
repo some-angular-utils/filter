@@ -69,7 +69,9 @@
                 [searchButtonText]="searchButtonText"
                 [orderByFields]="filterConfig?.orderByFields || []"
                 [sortOrderGroup]="sortOrderGroup"
-                (search)="processFilter()">
+                [hiddenCount]="hiddenFilterCount"
+                (search)="processFilter()"
+                (showHidden)="showMoreFilter($event)">
             </sau-filter-button>
 
         </div>

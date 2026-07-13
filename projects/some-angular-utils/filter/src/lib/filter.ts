@@ -52,6 +52,14 @@ export class SAUFilterModule {
     return !!(this.filterConfig?.orderByFields && this.filterConfig.orderByFields.length > 0);
   }
 
+  public get hiddenFilterCount(): number {
+    if (!this.isMobile()) return 0;
+    const mobile: string[] = this.filterConfig?.mobile;
+    if (!mobile?.length) return 0;
+    const all: string[] = this.filterConfig?.order || [];
+    return all.filter(f => !mobile.includes(f)).length;
+  }
+
   private convertToNumberFilter(value: any): any {
     if (value === null || value === undefined || value === '') return '';
     if (typeof value === 'boolean') return value;
@@ -239,6 +247,6 @@ export class SAUFilterModule {
   }
 
   private isMobile(): boolean {
-    return !!(navigator.userAgent.match(/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i));
+    return window.innerWidth < 576;
   }
 }
