@@ -1,6 +1,9 @@
-import { Component, ElementRef, HostListener, Input, ViewChild, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, ViewChild, OnInit, OnChanges, OnDestroy, Optional, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
+
+import { SelectCoordinatorService } from './select-coordinator.service';
 
 @Component({
     selector: 'custom-select',
@@ -8,7 +11,7 @@ import { CommonModule } from '@angular/common';
     styleUrl: './custom-select.component.scss',
     imports: [CommonModule, ReactiveFormsModule]
 })
-export class CustomSelectComponent implements OnInit, OnChanges {
+export class CustomSelectComponent implements OnInit, OnChanges, OnDestroy {
     @Input() label = '';
     @Input() placeholder = 'Selecciona una opción';
     @Input() isMultiple = false;
@@ -38,6 +41,8 @@ export class CustomSelectComponent implements OnInit, OnChanges {
     private _formControlItem!: AbstractControl;
     inputControl!: FormControl;
 
+    private openedSubscription?: Subscription;
+
     @Input() set formControlItem(ctrl: AbstractControl) {
         this._formControlItem = ctrl;
         this.inputControl = ctrl as FormControl;
@@ -54,7 +59,7 @@ export class CustomSelectComponent implements OnInit, OnChanges {
     }
     get formControlItem() { return this._formControlItem; }
 
-    constructor(private elementRef: ElementRef) {
+    constructor(private elementRef: ElementRef, @Optional() private coordinator?: SelectCoordinatorService) {
         this.searchControl.valueChanges.subscribe(val => {
             if (this.isOpen) {
                 this.filterData(val || '');
@@ -68,6 +73,17 @@ export class CustomSelectComponent implements OnInit, OnChanges {
         if (this.inputControl) {
             this.syncVisualInput(this.inputControl.value);
         }
+
+        // Si otro custom-select del mismo <sau-filter> se abre, cerramos este
+        this.openedSubscription = this.coordinator?.opened$.subscribe(source => {
+            if (source !== this && this.isOpen) {
+                this.closeDropdown();
+            }
+        });
+    }
+
+    ngOnDestroy() {
+        this.openedSubscription?.unsubscribe();
     }
 
     // Captura cualquier desajuste de ciclo de vida de inputs nativos de Angular
@@ -90,6 +106,10 @@ export class CustomSelectComponent implements OnInit, OnChanges {
             this.closeDropdown();
             return;
         }
+
+        // stopPropagation() de arriba impide que el clickOut() de document de otros
+        // custom-select se dispare, así que avisamos explícitamente para que se cierren
+        this.coordinator?.notifyOpened(this);
 
         this.isOpen = true;
         this.searchControl.setValue('', { emitEvent: false });
