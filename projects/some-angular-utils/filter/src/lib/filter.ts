@@ -1,10 +1,12 @@
-import { Component, Input, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, Input, Output, EventEmitter, OnDestroy, QueryList, ViewChildren, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 import { CustomInputComponent } from './components/custom-input/custom-input.component';
 import { CustomSelectComponent } from './components/custom-select/custom-select.component';
-import { SAUDateRangePickerModule, DropdownCoordinatorService } from '@some-angular-utils/date-range-picker';
+import { DropdownCoordinatorService } from './services/dropdown-coordinator.service';
+import { SAUDateRangePickerModule } from '@some-angular-utils/date-range-picker';
 import { FilterButtonComponent } from './components/filter-button/filter-button.component';
 
 @Component({
@@ -22,7 +24,7 @@ import { FilterButtonComponent } from './components/filter-button/filter-button.
     FilterButtonComponent,
   ]
 })
-export class SAUFilterModule {
+export class SAUFilterModule implements OnDestroy {
 
   @Input() filterConfig: any;
   @Input() searchButtonText = 'Buscar';
@@ -35,7 +37,28 @@ export class SAUFilterModule {
   // FormGroup para aislar y encapsular todas las columnas de ordenación
   public sortOrderGroup = new FormGroup<any>({});
 
-  constructor(private datePipe: DatePipe) { }
+  // sau-date-range-picker vive en un paquete hermano y no conoce el DropdownCoordinatorService,
+  // así que coordinamos su apertura/cierre con el resto de campos desde aquí:
+  @ViewChildren(SAUDateRangePickerModule) private dateRangePickers!: QueryList<SAUDateRangePickerModule>;
+  private openedSubscription?: Subscription;
+
+  // 1. custom-select/custom-input -> date-range-picker: al notificar el coordinador,
+  //    cerramos los date-range-picker usando sus signals públicos showDropdown/showCalendar.
+  // 2. date-range-picker -> custom-select/custom-input: toggleDropdown()/openCustomRange()
+  //    hacen stopPropagation(), así que un listener normal en fase de burbuja nunca los detecta;
+  //    usamos un listener nativo en fase de CAPTURA (se ejecuta antes de cualquier stopPropagation
+  //    interno) para detectar el click en el "toggle" del date-range-picker y avisar al coordinador.
+  private readonly onDateRangeToggleCapture = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (target.closest('.sau-date-range__dropdown, .sau-date-range__calendar-popover')) return;
+    if (target.closest('.sau-date-range__wrapper, .sau-date-range__label')) {
+      this.coordinator.notifyOpened('date-range-picker');
+    }
+  };
+
+  constructor(private datePipe: DatePipe, private coordinator: DropdownCoordinatorService, private elementRef: ElementRef) {
+    this.elementRef.nativeElement.addEventListener('click', this.onDateRangeToggleCapture, true);
+  }
 
   private get orderKey(): string {
     return this.filterConfig?.orderParamName || 'order';
@@ -46,6 +69,21 @@ export class SAUFilterModule {
       this.arrayMobile = this.filterConfig.mobile;
     }
     this.buildFormStructure();
+
+    this.openedSubscription = this.coordinator.opened$.subscribe(() => this.closeDateRangePickers());
+  }
+
+  ngOnDestroy() {
+    this.openedSubscription?.unsubscribe();
+    this.elementRef.nativeElement.removeEventListener('click', this.onDateRangeToggleCapture, true);
+  }
+
+  private closeDateRangePickers(): void {
+    // hoveredDate no se toca: openCustomRange() ya lo resetea la próxima vez que se abre
+    this.dateRangePickers?.forEach(picker => {
+      picker.showDropdown.set(false);
+      picker.showCalendar.set(false);
+    });
   }
 
   public hasOrderFields(): boolean {

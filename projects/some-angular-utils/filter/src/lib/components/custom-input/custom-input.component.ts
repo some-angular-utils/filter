@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Optional, Output } from '@angular/core';
 import { AbstractControl, FormControl, ReactiveFormsModule } from '@angular/forms';
 
-import { DropdownCoordinatorService } from '@some-angular-utils/date-range-picker';
+import { DropdownCoordinatorService } from '../../services/dropdown-coordinator.service';
 
 @Component({
   selector: 'custom-input',
