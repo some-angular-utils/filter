@@ -1,5 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Optional, Output } from '@angular/core';
 import { AbstractControl, FormControl, ReactiveFormsModule } from '@angular/forms';
+
+import { DropdownCoordinatorService } from '@some-angular-utils/date-range-picker';
 
 @Component({
   selector: 'custom-input',
@@ -46,6 +48,8 @@ export class CustomInputComponent {
 
   @Output() onClick = new EventEmitter<any>();
 
+  constructor(@Optional() private coordinator?: DropdownCoordinatorService) { }
+
   doClick() {
     this.onClick.emit();
   }
@@ -83,7 +87,12 @@ export class CustomInputComponent {
   toggleTriState(event: MouseEvent) {
     event.stopPropagation();
 
-    // Evaluamos el valor actual usando comparaciones estrictas (===) 
+    // stopPropagation() de arriba impide que el clickOut() de document de los
+    // custom-select/sau-date-range-picker abiertos se dispare, así que avisamos
+    // explícitamente al coordinador para que se cierren
+    this.coordinator?.notifyOpened(this);
+
+    // Evaluamos el valor actual usando comparaciones estrictas (===)
     // para que JS no mezcle undefined con false.
     const currentValue = this.inputControl.value;
     let nextValue: boolean | undefined;

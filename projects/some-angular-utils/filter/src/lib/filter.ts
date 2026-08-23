@@ -4,8 +4,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 
 import { CustomInputComponent } from './components/custom-input/custom-input.component';
 import { CustomSelectComponent } from './components/custom-select/custom-select.component';
-import { SelectCoordinatorService } from './components/custom-select/select-coordinator.service';
-import { SAUDateRangePickerModule } from '@some-angular-utils/date-range-picker';
+import { SAUDateRangePickerModule, DropdownCoordinatorService } from '@some-angular-utils/date-range-picker';
 import { FilterButtonComponent } from './components/filter-button/filter-button.component';
 
 @Component({
@@ -13,7 +12,7 @@ import { FilterButtonComponent } from './components/filter-button/filter-button.
   templateUrl: './filter.html',
   styleUrls: ['./filter.scss'],
   encapsulation: ViewEncapsulation.None,
-  providers: [DatePipe, SelectCoordinatorService],
+  providers: [DatePipe, DropdownCoordinatorService],
   imports: [
     CommonModule,
     ReactiveFormsModule,

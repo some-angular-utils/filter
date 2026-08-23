@@ -3,7 +3,7 @@ import { AbstractControl, FormControl, ReactiveFormsModule } from '@angular/form
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 
-import { SelectCoordinatorService } from './select-coordinator.service';
+import { DropdownCoordinatorService } from '@some-angular-utils/date-range-picker';
 
 @Component({
     selector: 'custom-select',
@@ -59,7 +59,10 @@ export class CustomSelectComponent implements OnInit, OnChanges, OnDestroy {
     }
     get formControlItem() { return this._formControlItem; }
 
-    constructor(private elementRef: ElementRef, @Optional() private coordinator?: SelectCoordinatorService) {
+    constructor(
+        private elementRef: ElementRef,
+        private coordinator?: DropdownCoordinatorService
+    ) {
         this.searchControl.valueChanges.subscribe(val => {
             if (this.isOpen) {
                 this.filterData(val || '');
