@@ -1,6 +1,6 @@
 @if (formControlItem) {
 <div class="sau-input" [class.sau-input--slide-tri-state]="type === 'checkbox'"
-    (click)="type == 'checkbox' && toggleTriState($event)">
+    (click)="onWrapperClick($event)">
 
     @if (type !== 'checkbox') {
     <label class="sau-input__label">

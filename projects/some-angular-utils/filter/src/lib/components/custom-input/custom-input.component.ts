@@ -54,6 +54,14 @@ export class CustomInputComponent {
     this.onClick.emit();
   }
 
+  onWrapperClick(event: MouseEvent) {
+    // Nunca debe devolver `false`: Angular llamaría preventDefault() sobre el evento
+    // y eso rompería el foco nativo que el <label> delega a su <input> envuelto.
+    if (this.type === 'checkbox') {
+      this.toggleTriState(event);
+    }
+  }
+
   /**
    * Mapea de forma estricta las entradas para evitar que 'falsys' de JS 
    * como el string vacío o el número 0 se confundan con null/undefined.
