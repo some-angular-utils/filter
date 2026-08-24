@@ -1,6 +1,8 @@
-import { Component, Input, Output, EventEmitter, HostListener, ElementRef, ViewEncapsulation } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, ElementRef, OnInit, OnDestroy, Optional, ViewEncapsulation } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { CustomInputComponent } from '../custom-input/custom-input.component';
+import { DropdownCoordinatorService } from '../../services/dropdown-coordinator.service';
 
 @Component({
   selector: 'sau-filter-button',
@@ -9,7 +11,7 @@ import { CustomInputComponent } from '../custom-input/custom-input.component';
   encapsulation: ViewEncapsulation.None,
   imports: [ReactiveFormsModule, CustomInputComponent],
 })
-export class FilterButtonComponent {
+export class FilterButtonComponent implements OnInit, OnDestroy {
 
   @Input() searchButtonText = 'Buscar';
   @Input() orderByFields: { field: string; label: string }[] = [];
@@ -20,8 +22,22 @@ export class FilterButtonComponent {
 
   public showOrderDropdown = false;
   public showAllFilters = false;
+  private openedSubscription?: Subscription;
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(private elementRef: ElementRef, @Optional() private coordinator?: DropdownCoordinatorService) {}
+
+  ngOnInit() {
+    // Si un custom-select/custom-input/date-range-picker del mismo <sau-filter> se abre, cerramos este popover
+    this.openedSubscription = this.coordinator?.opened$.subscribe(source => {
+      if (source !== this && this.showOrderDropdown) {
+        this.showOrderDropdown = false;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.openedSubscription?.unsubscribe();
+  }
 
   public hasOrderFields(): boolean {
     return !!(this.orderByFields && this.orderByFields.length > 0);
@@ -46,6 +62,9 @@ export class FilterButtonComponent {
     event.stopPropagation();
     if (this.hasOrderFields()) {
       this.showOrderDropdown = !this.showOrderDropdown;
+      if (this.showOrderDropdown) {
+        this.coordinator?.notifyOpened(this);
+      }
     }
   }
 
