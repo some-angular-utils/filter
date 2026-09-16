@@ -139,6 +139,14 @@
         display: flex;
         flex-direction: column;
         gap: 0.25rem;
+
+        // 'none' (ver dragAnimation en filter-button.component.ts): desactiva por completo tanto
+        // el desplazamiento animado como el "pop" de coger la fila, y prevalece sobre las variables
+        // --sau-order-duration/--sau-order-easing de abajo.
+        &--no-anim .sau-filter__order-row,
+        &--no-anim .sau-filter__order-row.is-dragging {
+            transition: none !important;
+        }
     }
 
     &__order-title {
@@ -153,16 +161,69 @@
     }
 
     &__order-row {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
         width: 100%;
         padding: 0.25rem 0;
         border-bottom: 1px dashed #f1f5f9;
+        border-radius: 0.375rem;
+        // Anima el hueco que dejan las filas al apartarse (ver getRowTranslatePx()) con la curva
+        // elegida en `dragAnimation` (--sau-order-duration/--sau-order-easing, con "muelle" como
+        // valor por defecto); la propia fila arrastrada sobreescribe esta transición más abajo
+        // para seguir al puntero al instante, sin retraso.
+        transition: translate var(--sau-order-duration, 0.28s) var(--sau-order-easing, cubic-bezier(0.34, 1.56, 0.64, 1)),
+            background-color 0.15s ease;
 
         &:last-child {
             border-bottom: none;
         }
+
+        &.is-dragging {
+            position: relative;
+            z-index: 5;
+            background-color: var(--sau-color-background);
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 20px -4px rgba(0, 0, 0, 0.18), 0 4px 8px -2px rgba(0, 0, 0, 0.1);
+            scale: 1.03;
+            rotate: 1.5deg;
+            cursor: grabbing;
+            // "Coger" la fila (scale/rotate/sombra) se anima con su propio pop; el translate que la
+            // sigue 1:1 al puntero queda excluido (duración 0) para que no arrastre con retraso.
+            transition: scale 0.15s ease, rotate 0.15s ease, box-shadow 0.15s ease, translate 0s;
+
+            .sau-filter__order-drag-handle {
+                cursor: grabbing;
+            }
+        }
+
+        // Primer frame del "asentado" tras soltar (ver onOrderPointerUp en el .ts): coloca la fila
+        // exactamente donde el puntero la dejó, sin transición, antes de animarla hasta su posición
+        // final en el frame siguiente — evita el salto visual al reordenar el array.
+        &.is-settling-immediate {
+            transition: none;
+        }
+    }
+
+    &__order-drag-handle {
+        flex: 0 0 auto;
+        cursor: grab;
+        color: #cbd5e1;
+        font-size: 1rem;
+        line-height: 1;
+        padding: 0 0.125rem;
+        user-select: none;
+        touch-action: none;
+
+        &:hover {
+            color: #94a3b8;
+        }
     }
 
     &__order-input {
+        flex: 1 1 auto;
+        min-width: 0;
         .sau-input__label {
             flex-direction: row !important;
             align-items: center !important;

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Optional, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Optional, Output } from '@angular/core';
 import { AbstractControl, FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import { DropdownCoordinatorService } from '../../services/dropdown-coordinator.service';
@@ -48,7 +48,10 @@ export class CustomInputComponent {
 
   @Output() onClick = new EventEmitter<any>();
 
-  constructor(@Optional() private coordinator?: DropdownCoordinatorService) { }
+  // Público para que otros desplegables (p.ej. el popover de orden de sau-filter-button)
+  // puedan comprobar si un aviso del coordinador viene de un custom-input anidado dentro
+  // de ellos mismos, y así no cerrarse al interactuar con sus propios controles.
+  constructor(public elementRef: ElementRef, @Optional() private coordinator?: DropdownCoordinatorService) { }
 
   doClick() {
     this.onClick.emit();

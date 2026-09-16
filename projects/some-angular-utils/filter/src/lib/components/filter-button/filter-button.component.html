@@ -24,11 +24,17 @@
 
     @if (showOrderDropdown && hasOrderFields()) {
     <div class="sau-filter__order-popover" (click)="$event.stopPropagation()">
-        <div class="sau-filter__order-container">
-            <span class="sau-filter__order-title">Criterios de Ordenación</span>
+        <div class="sau-filter__order-container" [class.sau-filter__order-container--no-anim]="dragAnimation === 'none'"
+            [style.--sau-order-duration]="orderTransitionDuration" [style.--sau-order-easing]="orderTransitionEasing">
+            <span class="sau-filter__order-title">{{orderTitle}}</span>
 
-            @for (option of orderByFields; track option.field) {
-            <div class="sau-filter__order-row">
+            @for (option of orderByFields; track option.field; let i = $index) {
+            <div class="sau-filter__order-row" [class.is-dragging]="draggedIndex === i"
+                [class.is-settling-immediate]="settlingIndex === i && settlingImmediate"
+                [style.translate]="'0 ' + getRowTranslatePx(i) + 'px'">
+                <span class="sau-filter__order-drag-handle" aria-hidden="true"
+                    (mousedown)="onOrderHandlePointerDown($event, i)"
+                    (touchstart)="onOrderHandlePointerDown($event, i)">⠿</span>
                 <custom-input class="sau-filter__order-input" [label]="option.label" [type]="'checkbox'"
                     [formControlItem]="sortOrderGroup.controls[option.field]" trueLabel="Ascendente"
                     falseLabel="Descendente" nullLabel="Sin ordenar" trueIcon="↑" falseIcon="↓">

@@ -7,7 +7,7 @@ import { CustomInputComponent } from './components/custom-input/custom-input.com
 import { CustomSelectComponent } from './components/custom-select/custom-select.component';
 import { DropdownCoordinatorService } from './services/dropdown-coordinator.service';
 import { SAUDateRangePickerModule } from '@some-angular-utils/date-range-picker';
-import { FilterButtonComponent } from './components/filter-button/filter-button.component';
+import { FilterButtonComponent, SAUOrderDragAnimation } from './components/filter-button/filter-button.component';
 
 @Component({
   selector: 'sau-filter',
@@ -62,6 +62,14 @@ export class SAUFilterModule implements OnDestroy {
 
   private get orderKey(): string {
     return this.filterConfig?.orderParamName || 'order';
+  }
+
+  public get orderTitle(): string {
+    return this.filterConfig?.orderTitle || 'Criterios de Ordenación';
+  }
+
+  public get orderDragAnimation(): SAUOrderDragAnimation {
+    return this.filterConfig?.orderDragAnimation || 'spring';
   }
 
   ngOnInit() {
@@ -189,16 +197,19 @@ export class SAUFilterModule implements OnDestroy {
     const jsonResult: any = {};
     const formConfig = this.filterConfig.form;
 
-    // 2. Procesar los múltiples valores de ordenación activos
+    // 2. Procesar los múltiples valores de ordenación activos.
+    // Iteramos sobre filterConfig.orderByFields (y no sobre las claves del FormGroup) porque
+    // su orden es el que el usuario puede reordenar arrastrando en sau-filter-button, y ese
+    // orden visual es el que determina la prioridad de los criterios en la query de ordenación.
     if (this.hasOrderFields()) {
       const orderSegments: string[] = [];
 
-      Object.keys(this.sortOrderGroup.controls).forEach(fieldKey => {
-        const value = this.sortOrderGroup.get(fieldKey)?.value;
+      this.filterConfig.orderByFields.forEach((option: { field: string }) => {
+        const value = this.sortOrderGroup.get(option.field)?.value;
         if (value === true) {
-          orderSegments.push(fieldKey);       // Ascendente: "title"
+          orderSegments.push(option.field);       // Ascendente: "title"
         } else if (value === false) {
-          orderSegments.push(`-${fieldKey}`);  // Descendente: "-title"
+          orderSegments.push(`-${option.field}`);  // Descendente: "-title"
         }
       });
 

@@ -122,10 +122,16 @@ const SORT_CODE = `{
   searchButtonText: 'Search',
   filterConfig: {
     orderParamName: 'sort',
+    // Shown as the popover heading — defaults to 'Criterios de Ordenación' if omitted.
+    orderTitle: 'Sort by',
+    // Drag the ⠿ handle on each row below to reorder — that priority order is what ends up in
+    // the query string. 'spring' (default) | 'smooth' | 'fast' | 'none' — try changing it.
+    orderDragAnimation: 'spring',
     orderByFields: [
       { field: 'title', label: 'Title' },
       { field: 'created_at', label: 'Created date' },
       { field: 'total', label: 'Total amount' },
+      { field: 'status', label: 'Status' },
     ],
     order: ['search'],
     mobile: ['search'],
@@ -166,6 +172,8 @@ const KITCHEN_CODE = `{
   searchButtonText: 'Find jobs',
   filterConfig: {
     orderParamName: 'sort',
+    orderTitle: 'Sort jobs by',
+    orderDragAnimation: 'smooth',
     orderByFields: [
       { field: 'salary',    label: 'Salary',       defaultValue: false },
       { field: 'posted_at', label: 'Posted date',   defaultValue: true },
@@ -227,7 +235,7 @@ export class DemosComponent implements OnDestroy {
     createDemo('selects', 'Selects & sub-labels', 'Single-select and multi-select fields, both with searchable dropdowns and an optional sub-label.', 'js', SELECTS_CODE),
     createDemo('numbers', 'Numbers & checkbox', 'Numeric range fields plus a tri-state checkbox (true / false / unset).', 'js', NUMBERS_CODE),
     createDemo('dates', 'Dates & ranges', 'A single date picker and a date-range field with quick presets (today, this month...).', 'js', DATES_CODE),
-    createDemo('sort', 'Sort order', 'Add orderByFields to get a built-in ascending/descending sort dropdown next to the button.', 'js', SORT_CODE),
+    createDemo('sort', 'Sort order', 'Add orderByFields to get a built-in ascending/descending sort dropdown next to the button. Drag rows to reorder priority, and try orderTitle / orderDragAnimation.', 'js', SORT_CODE),
     createDemo('sortDefaults', 'Sort defaults', 'Use defaultValue: true (asc) or false (desc) on each orderByField to pre-populate the sort state on load.', 'js', SORT_DEFAULTS_CODE),
     createDemo('kitchen', 'Kitchen sink', 'All field types, sort with defaults, and a custom brand color — everything at once.', 'js', KITCHEN_CODE),
     createDemo('theme', 'Theming', 'Every color is a CSS custom property. Edit the values below and watch it restyle instantly.', 'css', THEME_CODE),
