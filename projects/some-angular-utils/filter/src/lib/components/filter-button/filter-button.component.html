@@ -31,14 +31,16 @@
             @for (option of orderByFields; track option.field; let i = $index) {
             <div class="sau-filter__order-row" [class.is-dragging]="draggedIndex === i"
                 [class.is-settling-immediate]="settlingIndex === i && settlingImmediate"
-                [style.translate]="'0 ' + getRowTranslatePx(i) + 'px'">
-                <span class="sau-filter__order-drag-handle" aria-hidden="true"
-                    (mousedown)="onOrderHandlePointerDown($event, i)"
-                    (touchstart)="onOrderHandlePointerDown($event, i)">⠿</span>
-                <custom-input class="sau-filter__order-input" [label]="option.label" [type]="'checkbox'"
-                    [formControlItem]="sortOrderGroup.controls[option.field]" trueLabel="Ascendente"
-                    falseLabel="Descendente" nullLabel="Sin ordenar" trueIcon="↑" falseIcon="↓">
-                </custom-input>
+                [style.transform]="getRowTransform(i)">
+                <div class="sau-filter__order-row-inner" [class.is-dragging]="draggedIndex === i">
+                    <span class="sau-filter__order-drag-handle" aria-hidden="true"
+                        (mousedown)="onOrderHandlePointerDown($event, i)"
+                        (touchstart)="onOrderHandlePointerDown($event, i)">⠿</span>
+                    <custom-input class="sau-filter__order-input" [label]="option.label" [type]="'checkbox'"
+                        [formControlItem]="sortOrderGroup.controls[option.field]" trueLabel="Ascendente"
+                        falseLabel="Descendente" nullLabel="Sin ordenar" trueIcon="↑" falseIcon="↓">
+                    </custom-input>
+                </div>
             </div>
             }
         </div>

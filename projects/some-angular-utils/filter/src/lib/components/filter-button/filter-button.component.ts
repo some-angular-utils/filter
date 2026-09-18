@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, HostListener, ElementRef, OnInit, OnDestroy, Optional, ViewEncapsulation } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, ElementRef, OnInit, OnDestroy, Optional, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { CustomInputComponent } from '../custom-input/custom-input.component';
@@ -6,7 +6,7 @@ import { DropdownCoordinatorService } from '../../services/dropdown-coordinator.
 
 // Estilos de animación disponibles para el drag & drop de "Criterios de Ordenación".
 // Se controlan variando la curva/duración de la transición CSS que anima el "hacer hueco" al
-// arrastrar y el "asentado" al soltar (ver getRowTranslatePx() y onOrderPointerUp()); 'none'
+// arrastrar y el "asentado" al soltar (ver getRowTransform() y onOrderPointerUp()); 'none'
 // además desactiva también el "pop" (scale/rotate/sombra) de coger la fila.
 export type SAUOrderDragAnimation = 'spring' | 'smooth' | 'fast' | 'none';
 
@@ -56,7 +56,12 @@ export class FilterButtonComponent implements OnInit, OnDestroy {
   // segmentos de la query de ordenación al procesar el filtro — no hace falta ningún @Output.
   public draggedIndex: number | null = null;
   public dragOverIndex: number | null = null;
+  // La fila arrastrada sigue al puntero en ambos ejes (dragOffsetX/Y = delta desde el mousedown),
+  // para que se note literalmente "pegada" al ratón; el resto de filas (hacer hueco / settle) solo
+  // se desplazan en vertical, ya que es una lista de una columna.
+  public dragOffsetX = 0;
   public dragOffsetPx = 0;
+  private dragStartClientX = 0;
   private dragStartClientY = 0;
   private rowHeight = 0;
   private initialRowTops: number[] = [];
@@ -68,7 +73,11 @@ export class FilterButtonComponent implements OnInit, OnDestroy {
   public settlingOffsetPx = 0;
   public settlingImmediate = false;
 
-  constructor(private elementRef: ElementRef, @Optional() private coordinator?: DropdownCoordinatorService) {}
+  constructor(
+    private elementRef: ElementRef,
+    private cdr: ChangeDetectorRef,
+    @Optional() private coordinator?: DropdownCoordinatorService,
+  ) {}
 
   ngOnInit() {
     // Si un custom-select/custom-input/date-range-picker del mismo <sau-filter> se abre, cerramos este popover.
@@ -152,8 +161,10 @@ export class FilterButtonComponent implements OnInit, OnDestroy {
     this.initialRowTops = rows.map(row => row.getBoundingClientRect().top);
     this.rowHeight = rows[index]?.getBoundingClientRect().height || 0;
 
-    const clientY = this.clientYFromEvent(event);
-    this.dragStartClientY = clientY ?? 0;
+    const point = this.clientPointFromEvent(event);
+    this.dragStartClientX = point?.x ?? 0;
+    this.dragStartClientY = point?.y ?? 0;
+    this.dragOffsetX = 0;
     this.dragOffsetPx = 0;
     this.draggedIndex = index;
     this.dragOverIndex = index;
@@ -169,14 +180,19 @@ export class FilterButtonComponent implements OnInit, OnDestroy {
     document.addEventListener('touchend', this.onOrderPointerUp);
   }
 
-  // Desplazamiento (en px) que debe aplicarse a la fila `index` para animar el "coger y soltar":
-  // la fila arrastrada sigue al puntero 1:1, las filas que quedan entre su posición original y la
-  // posición sobre la que se está soltando se apartan un `rowHeight` para hacerle hueco, y tras
-  // soltar, la fila dropeada usa `settlingIndex`/`settlingOffsetPx` para el ajuste fino (ver
-  // onOrderPointerUp) en vez de saltar directamente a 0.
-  public getRowTranslatePx(index: number): number {
+  // Transform CSS que debe aplicarse a la fila `index`: la fila arrastrada sigue al puntero 1:1
+  // en los dos ejes (para que se note pegada al ratón); las demás filas solo se desplazan en
+  // vertical, bien para apartarse y hacerle hueco (ver dragOverIndex), bien durante el "asentado"
+  // final tras soltar (settlingIndex/settlingOffsetPx, ajuste FLIP — ver onOrderPointerUp).
+  public getRowTransform(index: number): string {
+    if (this.draggedIndex !== null && index === this.draggedIndex) {
+      return `translate(${this.dragOffsetX}px, ${this.dragOffsetPx}px)`;
+    }
+    return `translateY(${this.getRowVerticalShiftPx(index)}px)`;
+  }
+
+  private getRowVerticalShiftPx(index: number): number {
     if (this.draggedIndex !== null) {
-      if (index === this.draggedIndex) return this.dragOffsetPx;
       if (this.dragOverIndex === null) return 0;
 
       if (this.draggedIndex < this.dragOverIndex) {
@@ -196,20 +212,25 @@ export class FilterButtonComponent implements OnInit, OnDestroy {
     if (this.draggedIndex === null) return;
     event.preventDefault();
 
-    const clientY = this.clientYFromEvent(event);
-    if (clientY === undefined) return;
+    const point = this.clientPointFromEvent(event);
+    if (!point) return;
 
-    this.dragOffsetPx = clientY - this.dragStartClientY;
+    this.dragOffsetX = point.x - this.dragStartClientX;
+    this.dragOffsetPx = point.y - this.dragStartClientY;
 
     let targetIndex = this.draggedIndex;
     for (let i = 0; i < this.initialRowTops.length; i++) {
       const top = this.initialRowTops[i];
-      if (clientY >= top && clientY <= top + this.rowHeight) {
+      if (point.y >= top && point.y <= top + this.rowHeight) {
         targetIndex = i;
         break;
       }
     }
     this.dragOverIndex = targetIndex;
+
+    // La app puede correr sin zone.js (Angular zoneless): sin zona que detecte la mutación de los
+    // campos de arriba, la vista nunca se repintaría durante el arrastre. Forzamos el chequeo aquí.
+    this.cdr.detectChanges();
   };
 
   private readonly onOrderPointerUp = (): void => {
@@ -237,17 +258,20 @@ export class FilterButtonComponent implements OnInit, OnDestroy {
         requestAnimationFrame(() => {
           this.settlingImmediate = false;
           this.settlingOffsetPx = 0;
+          this.cdr.detectChanges();
         });
       });
     }
 
     this.resetDragState();
     this.removeOrderPointerListeners();
+    this.cdr.detectChanges();
   };
 
   private resetDragState(): void {
     this.draggedIndex = null;
     this.dragOverIndex = null;
+    this.dragOffsetX = 0;
     this.dragOffsetPx = 0;
     this.initialRowTops = [];
   }
@@ -263,7 +287,11 @@ export class FilterButtonComponent implements OnInit, OnDestroy {
     return Array.from(this.elementRef.nativeElement.querySelectorAll('.sau-filter__order-row'));
   }
 
-  private clientYFromEvent(event: MouseEvent | TouchEvent): number | undefined {
-    return event instanceof MouseEvent ? event.clientY : event.touches[0]?.clientY;
+  private clientPointFromEvent(event: MouseEvent | TouchEvent): { x: number; y: number } | undefined {
+    if (event instanceof MouseEvent) {
+      return { x: event.clientX, y: event.clientY };
+    }
+    const touch = event.touches[0];
+    return touch ? { x: touch.clientX, y: touch.clientY } : undefined;
   }
 }
