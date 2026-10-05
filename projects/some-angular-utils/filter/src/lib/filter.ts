@@ -2,6 +2,7 @@ import { Component, ElementRef, Input, Output, EventEmitter, OnDestroy, QueryLis
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 import { CustomInputComponent } from './components/custom-input/custom-input.component';
 import { CustomSelectComponent } from './components/custom-select/custom-select.component';
@@ -42,6 +43,11 @@ export class SAUFilterModule implements OnDestroy {
   @ViewChildren(SAUDateRangePickerModule) private dateRangePickers!: QueryList<SAUDateRangePickerModule>;
   private openedSubscription?: Subscription;
 
+  // Filtro rápido: input independiente arriba a la derecha que lanza processFilter()
+  // automáticamente cuando el usuario deja de escribir (sin pulsar el botón de buscar).
+  public quickFilterControl = new FormControl<string>('', { nonNullable: true });
+  private quickFilterSubscription?: Subscription;
+
   // 1. custom-select/custom-input -> date-range-picker: al notificar el coordinador,
   //    cerramos los date-range-picker usando sus signals públicos showDropdown/showCalendar.
   // 2. date-range-picker -> custom-select/custom-input: toggleDropdown()/openCustomRange()
@@ -68,6 +74,10 @@ export class SAUFilterModule implements OnDestroy {
     return this.filterConfig?.orderTitle || 'Criterios de Ordenación';
   }
 
+  public get quickFilter(): { key: string, placeholder?: string, label?: string, debounceTime?: number } | null {
+    return this.filterConfig?.quickFilter?.key ? this.filterConfig.quickFilter : null;
+  }
+
   public get orderDragAnimation(): SAUOrderDragAnimation {
     return this.filterConfig?.orderDragAnimation || 'spring';
   }
@@ -77,13 +87,35 @@ export class SAUFilterModule implements OnDestroy {
       this.arrayMobile = this.filterConfig.mobile;
     }
     this.buildFormStructure();
+    this.initQuickFilter();
 
     this.openedSubscription = this.coordinator.opened$.subscribe(() => this.closeDateRangePickers());
   }
 
   ngOnDestroy() {
     this.openedSubscription?.unsubscribe();
+    this.quickFilterSubscription?.unsubscribe();
     this.elementRef.nativeElement.removeEventListener('click', this.onDateRangeToggleCapture, true);
+  }
+
+  private initQuickFilter(): void {
+    const quickFilter = this.quickFilter;
+    if (!quickFilter) return;
+
+    const urlValue = new URLSearchParams(window.location.search).get(quickFilter.key);
+    if (urlValue) {
+      this.quickFilterControl.setValue(urlValue, { emitEvent: false });
+    }
+
+    this.quickFilterSubscription = this.quickFilterControl.valueChanges.pipe(
+      debounceTime(quickFilter.debounceTime ?? 500),
+      map(value => value.trim()),
+      distinctUntilChanged()
+    ).subscribe(() => this.processFilter());
+  }
+
+  public clearQuickFilter(): void {
+    this.quickFilterControl.setValue('');
   }
 
   private closeDateRangePickers(): void {
@@ -196,6 +228,12 @@ export class SAUFilterModule implements OnDestroy {
 
     const jsonResult: any = {};
     const formConfig = this.filterConfig.form;
+
+    // 1. Filtro rápido (si está configurado y tiene contenido)
+    const quickFilterValue = this.quickFilterControl.value.trim();
+    if (this.quickFilter && quickFilterValue !== '') {
+      jsonResult[this.quickFilter.key] = quickFilterValue;
+    }
 
     // 2. Procesar los múltiples valores de ordenación activos.
     // Iteramos sobre filterConfig.orderByFields (y no sobre las claves del FormGroup) porque

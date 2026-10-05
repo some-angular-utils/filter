@@ -173,6 +173,8 @@ const KITCHEN_CODE = `{
   filterConfig: {
     orderParamName: 'sort',
     orderTitle: 'Sort jobs by',
+    // Quick filter (top right): searches automatically ~500ms after you stop typing, no button needed.
+    quickFilter: { key: 'quick', placeholder: 'Quick search...', debounceTime: 500 },
     orderDragAnimation: 'smooth',
     orderByFields: [
       { field: 'salary',    label: 'Salary',       defaultValue: false },

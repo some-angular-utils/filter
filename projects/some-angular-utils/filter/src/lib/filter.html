@@ -1,4 +1,27 @@
 <div class="sau-filter">
+    @if (quickFilter) {
+    <div class="sau-filter__quick">
+        <label class="sau-filter__quick-label">
+            @if (quickFilter.label) {
+            <span class="sau-filter__quick-title">{{ quickFilter.label }}</span>
+            }
+            <span class="sau-filter__quick-wrapper">
+                <svg class="sau-filter__quick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="search" class="sau-filter__quick-field" [formControl]="quickFilterControl"
+                    [placeholder]="quickFilter.placeholder || 'Búsqueda rápida...'" autocomplete="off">
+                @if (quickFilterControl.value) {
+                <button type="button" class="sau-filter__quick-clear" (click)="clearQuickFilter()"
+                    aria-label="Limpiar">✕</button>
+                }
+            </span>
+        </label>
+    </div>
+    }
+
     <form [formGroup]="filterForm" class="sau-filter__form">
         <div class="sau-filter__grid">
             @for (nameField of filterConfig?.order; track nameField) {

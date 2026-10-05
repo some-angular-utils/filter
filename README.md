@@ -77,6 +77,14 @@ onFilterProcessed(event: { json: any, url: string }) {
 
 Add `orderParamName` and `orderByFields: [{ field, label }]` to `filterConfig` to get a built-in ascending/descending sort dropdown next to the search button.
 
+## QUICK FILTER
+
+Add `quickFilter: { key, placeholder?, label?, debounceTime? }` to `filterConfig` to show a separate search input at the top right. When the user stops typing (default `debounceTime`: 500ms) it runs the search automatically and emits `onFilterProcessed` — no need to press the search button. Its value is sent under `key` together with the rest of the filters, and it is pre-filled from the URL if that param is present.
+
+```ts
+quickFilter: { key: 'search', placeholder: 'Quick search...', debounceTime: 500 }
+```
+
 ## COLORS
 
 ```css
